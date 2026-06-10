@@ -7,7 +7,7 @@ import HistoryLog from "../components/HistoryLog";
 import { io } from "socket.io-client"; 
 
 // กำหนด URL สำหรับทดสอบในเครื่องคอมพิวเตอร์ของคุณ
-const BACKEND_URL = "http://localhost:3000"; 
+const BACKEND_URL = "https://tlma.onrender.com"; 
 
 const theme = {
     bg: "#020617",
