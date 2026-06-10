@@ -60,10 +60,9 @@ export default function App() {
       {/* ── MAIN CONTENT AREA ── */}
       <main style={{
         flex: 1,
-        padding: "24px",
+        padding: "4px",
         width: "100%",
         overflowY: "auto",
-        // เพิ่มตรงนี้เพื่อให้เนื้อหาภายในจัดวางได้ง่าย
         display: "flex",
         flexDirection: "column",
         gap: "20px"

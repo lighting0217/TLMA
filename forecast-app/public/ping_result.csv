@@ -1,21 +1,21 @@
 ﻿==================================================
-Description       : อุตรดิตถ์ (หมอนไม้)#IPA
-Host Name         : 147.50.245.228
-IP Address        : 147.50.245.228
+Description       : 25
+Host Name         : Feed
+IP Address        : 
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:30
 % Failed          : 100.00%
 Total Sent Pings  : 1
-Last Ping Status  : Request Timeout
+Last Ping Status  : Bad Host Name
 Last Ping Time    : 
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:30
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 1
@@ -24,15 +24,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : อุตรดิตถ์ (หมอนไม้)#IPB
-Host Name         : 147.50.245.140
-IP Address        : 147.50.245.140
+Description       : Feed 25 เลย ริเวอร์ไซด์ สเตเดียม#IPA
+Host Name         : 58.137.114.84
+IP Address        : 58.137.114.84
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -40,7 +40,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 2
@@ -49,15 +49,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : อุตรดิตถ์ (หมอนไม้)#R1
-Host Name         : 147.50.245.149
-IP Address        : 147.50.245.149
+Description       : Feed 25 เลย ริเวอร์ไซด์ สเตเดียม#IPB
+Host Name         : 58.137.114.92
+IP Address        : 58.137.114.92
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -65,7 +65,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 3
@@ -74,15 +74,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : อุตรดิตถ์ (หมอนไม้)#R2
-Host Name         : 147.50.245.150
-IP Address        : 147.50.245.150
+Description       : Feed 25 เลย ริเวอร์ไซด์ สเตเดียม#R1
+Host Name         : 58.137.114.101
+IP Address        : 58.137.114.101
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -90,7 +90,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 4
@@ -99,15 +99,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : เลย ริเวอร์ไซด์#IPA
-Host Name         : 58.137.114.84
-IP Address        : 58.137.114.84
+Description       : Feed 25 เลย ริเวอร์ไซด์ สเตเดียม#R2
+Host Name         : 58.137.114.102
+IP Address        : 58.137.114.102
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -115,7 +115,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 5
@@ -124,23 +124,23 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : เลย ริเวอร์ไซด์#IPB
-Host Name         : 58.137.114.92
-IP Address        : 58.137.114.92
+Description       : 20
+Host Name         : Feed
+IP Address        : 
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:30
 % Failed          : 100.00%
 Total Sent Pings  : 1
-Last Ping Status  : Request Timeout
+Last Ping Status  : Bad Host Name
 Last Ping Time    : 
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:30
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 6
@@ -149,15 +149,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : เลย ริเวอร์ไซด์#R1
-Host Name         : 58.137.114.101
-IP Address        : 58.137.114.101
+Description       : สนามยูนิฟ ฟุตบอลปาร์ค#IPA
+Host Name         : 14.207.198.68
+IP Address        : 14.207.198.68
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -165,7 +165,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 7
@@ -174,15 +174,15 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : เลย ริเวอร์ไซด์#R2
-Host Name         : 58.137.114.102
-IP Address        : 58.137.114.102
+Description       : สนามยูนิฟ ฟุตบอลปาร์ค#IPB
+Host Name         : 14.207.207.36
+IP Address        : 14.207.207.36
 Reply IP Address  : 
 Succeed Count     : 0
 Failed Count      : 1
 Consecutive Failed Count: 1
 Max Consecutive Failed Count: 1
-Max Consecutive Failed Time: 10/6/2569 10:19:25
+Max Consecutive Failed Time: 10/6/2569 12:01:28
 % Failed          : 100.00%
 Total Sent Pings  : 1
 Last Ping Status  : Request Timeout
@@ -190,7 +190,7 @@ Last Ping Time    :
 Last Ping TTL     : 
 Average Ping Time : 
 Last Succeed On   : 
-Last Failed On    : 10/6/2569 10:19:25
+Last Failed On    : 10/6/2569 12:01:28
 Minimum Ping Time : 
 Maximum Ping Time : 
 Order             : 8
@@ -199,10 +199,360 @@ MAC Address       :
 ==================================================
 
 ==================================================
-Description       : Test#GooGle
-Host Name         : 8.8.8.8.
-IP Address        : 8.8.8.8
-Reply IP Address  : 8.8.8.8
+Description       : สนามยูนิฟ ฟุตบอลปาร์ค#R1
+Host Name         : 14.207.207.45
+IP Address        : 14.207.207.45
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 9
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามยูนิฟ ฟุตบอลปาร์ค#R2
+Host Name         : 14.207.207.46
+IP Address        : 14.207.207.46
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 10
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : 21
+Host Name         : Feed
+IP Address        : 
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:30
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Bad Host Name
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:30
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 11
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามกีฬาเฉลิมพระเกียรติ 72 พรรษา#IPA
+Host Name         : 14.207.189.76
+IP Address        : 14.207.189.76
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 12
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามกีฬาเฉลิมพระเกียรติ 72 พรรษา#IPB
+Host Name         : 14.207.189.84
+IP Address        : 14.207.189.84
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 13
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามกีฬาเฉลิมพระเกียรติ 72 พรรษา#R1
+Host Name         : 14.207.189.93
+IP Address        : 14.207.189.93
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 14
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามกีฬาเฉลิมพระเกียรติ 72 พรรษา#R2
+Host Name         : 14.207.189.94
+IP Address        : 14.207.189.94
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 15
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : 24
+Host Name         : Feed
+IP Address        : 
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:30
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Bad Host Name
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:30
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 16
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามหญ้าเทียม โรงเรียนกีฬากีฬาจังหวัดลำปาง#IPA
+Host Name         : 14.207.196.212
+IP Address        : 14.207.196.212
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 17
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามหญ้าเทียม โรงเรียนกีฬากีฬาจังหวัดลำปาง#IPB
+Host Name         : 14.207.197.156
+IP Address        : 14.207.197.156
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 18
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามหญ้าเทียม โรงเรียนกีฬากีฬาจังหวัดลำปาง#R1
+Host Name         : 14.207.197.165
+IP Address        : 14.207.197.165
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 19
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามหญ้าเทียม โรงเรียนกีฬากีฬาจังหวัดลำปาง#R2
+Host Name         : 14.207.197.166
+IP Address        : 14.207.197.166
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 20
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : 25
+Host Name         : Feed
+IP Address        : 
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:30
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Bad Host Name
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:30
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 21
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามฟุตบอล โรงเรียนกีฬาจังหวัดขอนแก่น#IPA
+Host Name         : 14.207.198.92
+IP Address        : 14.207.198.92
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 22
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามฟุตบอล โรงเรียนกีฬาจังหวัดขอนแก่น#IPB
+Host Name         : 14.207.198.100
+IP Address        : 14.207.198.100
+Reply IP Address  : 14.207.198.100
 Succeed Count     : 1
 Failed Count      : 0
 Consecutive Failed Count: 
@@ -211,14 +561,64 @@ Max Consecutive Failed Time:
 % Failed          : 0%
 Total Sent Pings  : 1
 Last Ping Status  : Succeeded
-Last Ping Time    : 33.433
-Last Ping TTL     : 113
-Average Ping Time : 33.433
-Last Succeed On   : 10/6/2569 10:19:25
+Last Ping Time    : 34.598
+Last Ping TTL     : 240
+Average Ping Time : 34.598
+Last Succeed On   : 10/6/2569 12:01:28
 Last Failed On    : 
-Minimum Ping Time : 33.433
-Maximum Ping Time : 33.433
-Order             : 9
+Minimum Ping Time : 34.598
+Maximum Ping Time : 34.598
+Order             : 23
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามฟุตบอล โรงเรียนกีฬาจังหวัดขอนแก่น#R1
+Host Name         : 14.207.198.109
+IP Address        : 14.207.198.109
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 24
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : สนามฟุตบอล โรงเรียนกีฬาจังหวัดขอนแก่น#R2
+Host Name         : 14.207.198.110
+IP Address        : 14.207.198.110
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 12:01:28
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 12:01:28
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 25
 Disabled          : No
 MAC Address       : 
 ==================================================
