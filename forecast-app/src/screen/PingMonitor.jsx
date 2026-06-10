@@ -10,8 +10,27 @@ export default function PingMonitor() {
     const [searchTerm, setSearchTerm] = useState("");
     const prevStatus = useRef({});
 
+    // 🎯 จุดที่แก้ไข: ปรับปรุงตัวประมวลผลข้อมูลให้แกะฟอร์แมตอัตโนมัติ
     const processIncomingNodes = (parsedNodes) => {
-        parsedNodes.forEach(node => {
+        const normalizedNodes = parsedNodes.map(node => {
+            // ถ้ารายการไหนมีเครื่องหมาย # (เช่น ข้อมูลดิบจาก Socket) ให้ทำการหั่นแบ่งสนามทันที
+            if (node.name && node.name.includes("#")) {
+                const [stadiumName, deviceName] = node.name.split("#");
+                return {
+                    ...node,
+                    group: stadiumName.trim(),
+                    name: deviceName.trim()
+                };
+            }
+            // ถ้าไม่มี # แต่มี group อยู่แล้ว (มาจากระบบดัก CSV) ให้ใช้ค่าเดิม หรือตกไปอยู่กลุ่มทั่วไป
+            return {
+                ...node,
+                group: node.group ? node.group.trim() : "ทั่วไป"
+            };
+        });
+
+        // นำข้อมูลที่จัดฟอร์แมตสวยงามแล้วไปอัปเดตสถานะและแจ้งเตือน Alert
+        normalizedNodes.forEach(node => {
             updateStats(node);
             if (prevStatus.current[node.ip] === "ONLINE" && node.status === "TIMEOUT") {
                 addEvent(node);
@@ -22,11 +41,13 @@ export default function PingMonitor() {
             prevStatus.current[node.ip] = node.status;
         });
 
-        const grouped = parsedNodes.reduce((acc, node) => {
+        // 🧠 จัดกลุ่มสนามแบบ Dynamic (สนามใหม่งอกเองอัตโนมัติ ไม่ต้องคอย Hardcode ชื่อเพิ่มแล้ว)
+        const grouped = normalizedNodes.reduce((acc, node) => {
             if (!acc[node.group]) acc[node.group] = [];
             acc[node.group].push(node);
             return acc;
         }, {});
+
         setGroupedNodes(grouped);
     };
 
@@ -73,7 +94,7 @@ export default function PingMonitor() {
 
     return (
         <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px", padding: "4px" }}>
-            {/* 🔍 Search Bar สไตล์ล้ำๆ */}
+            {/* 🔍 Search Bar */}
             <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -95,16 +116,12 @@ export default function PingMonitor() {
                 onBlur={(e) => e.target.style.borderColor = "var(--border)"}
             />
             
-<div style={{ 
-    display: "flex", 
-    flexDirection: "column", 
-    gap: "14px",             
-    width: "100%"
-}}>
-    {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
-        <PingCard key={name} stadiumName={name} devices={devs} history={history} />
-    ))}
-</div>
+            {/* 📊 การ์ดแสดงผลแยกตามกลุ่มสนาม */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px", width: "100%" }}>
+                {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
+                    <PingCard key={name} stadiumName={name} devices={devs} history={history} />
+                ))}
+            </div>
             
             <HistoryLog events={events} />
         </div>
