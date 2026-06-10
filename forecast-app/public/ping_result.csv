@@ -1,0 +1,225 @@
+﻿==================================================
+Description       : อุตรดิตถ์ (หมอนไม้)#IPA
+Host Name         : 147.50.245.228
+IP Address        : 147.50.245.228
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 1
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : อุตรดิตถ์ (หมอนไม้)#IPB
+Host Name         : 147.50.245.140
+IP Address        : 147.50.245.140
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 2
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : อุตรดิตถ์ (หมอนไม้)#R1
+Host Name         : 147.50.245.149
+IP Address        : 147.50.245.149
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 3
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : อุตรดิตถ์ (หมอนไม้)#R2
+Host Name         : 147.50.245.150
+IP Address        : 147.50.245.150
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 4
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : เลย ริเวอร์ไซด์#IPA
+Host Name         : 58.137.114.84
+IP Address        : 58.137.114.84
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 5
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : เลย ริเวอร์ไซด์#IPB
+Host Name         : 58.137.114.92
+IP Address        : 58.137.114.92
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 6
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : เลย ริเวอร์ไซด์#R1
+Host Name         : 58.137.114.101
+IP Address        : 58.137.114.101
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 7
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : เลย ริเวอร์ไซด์#R2
+Host Name         : 58.137.114.102
+IP Address        : 58.137.114.102
+Reply IP Address  : 
+Succeed Count     : 0
+Failed Count      : 1
+Consecutive Failed Count: 1
+Max Consecutive Failed Count: 1
+Max Consecutive Failed Time: 10/6/2569 09:44:57
+% Failed          : 100.00%
+Total Sent Pings  : 1
+Last Ping Status  : Request Timeout
+Last Ping Time    : 
+Last Ping TTL     : 
+Average Ping Time : 
+Last Succeed On   : 
+Last Failed On    : 10/6/2569 09:44:57
+Minimum Ping Time : 
+Maximum Ping Time : 
+Order             : 8
+Disabled          : No
+MAC Address       : 
+==================================================
+
+==================================================
+Description       : Test#GooGle
+Host Name         : 8.8.8.8.
+IP Address        : 8.8.8.8
+Reply IP Address  : 8.8.8.8
+Succeed Count     : 1
+Failed Count      : 0
+Consecutive Failed Count: 
+Max Consecutive Failed Count: 
+Max Consecutive Failed Time: 
+% Failed          : 0%
+Total Sent Pings  : 1
+Last Ping Status  : Succeeded
+Last Ping Time    : 41.962
+Last Ping TTL     : 113
+Average Ping Time : 41.962
+Last Succeed On   : 10/6/2569 09:44:57
+Last Failed On    : 
+Minimum Ping Time : 41.962
+Maximum Ping Time : 41.962
+Order             : 9
+Disabled          : No
+MAC Address       : 
+==================================================
+
