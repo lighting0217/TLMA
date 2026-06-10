@@ -96,16 +96,22 @@ export default function PingMonitor() {
             />
             
             {/* 🎛️ ปรับกริดให้เหมาะสม กว้างขึ้น ไม่บีบตัวอักษรแตก */}
-            <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fill, minmax(460px, 1fr))", 
-                gap: "24px",
-                width: "100%"
-            }}>
-                {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
-                    <PingCard key={name} stadiumName={name} devices={devs} history={history} />
-                ))}
-            </div>
+<div style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
+    width: "100%"
+}}>
+    {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
+        <div key={name} style={{ width: "100%" }}>
+            <PingCard
+                stadiumName={name}
+                devices={devs}
+                history={history}
+            />
+        </div>
+    ))}
+</div>
             
             <HistoryLog events={events} />
         </div>
