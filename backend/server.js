@@ -12,7 +12,7 @@ app.use(cors({
     origin: ["https://tlma-eosin.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST"]
 }));
-app.use(express.json()); // เปิดระบบให้รองรับการรับข้อมูลแบบ JSON (สำหรับยิงขึ้นคลาวด์)
+app.use(express.json()); // เปิดระบบให้รองรับการรับข้อมูลแบบ JSON
 
 const server = http.createServer(app);
 
@@ -27,13 +27,24 @@ const io = new Server(server, {
 // ตัวแปรตรงกลางสำหรับฝากความทรงจำข้อมูล Ping ล่าสุดไว้บนแรมของเซิร์ฟเวอร์
 let globalPingData = [];
 
-// กำหนดตำแหน่งไฟล์ CSV สำหรับตอนรันเทสบนคอมตัวเอง (ถ้าขึ้นคลาวด์ Render มันจะสลับไปโหมดรับค่าจาก API แทนอัตโนมัติ)
+// ตัวแปรสำหรับบันทึกเวลาล่าสุดที่ได้รับการอัปเดตจาก Agent (ใช้เช็กเวลา Agent ปิดตัวลง)
+let lastAgentSeen = Date.now(); 
+
+// กำหนดตำแหน่งไฟล์ CSV สำหรับตอนรันเทสบนคอมตัวเอง
 const localCsvPath = 'C:\\Users\\Wuttikorn\\Documents\\TLF\\forecast-app\\public\\ping_result.csv';
+
+// ฟังก์ชันสำหรับจัดการอัปเดตสเตตในแรมและบันทึกเวลาที่ได้รับข้อมูล
+const updatePingDataMemory = (newData) => {
+    if (Array.isArray(newData) && newData.length > 0) {
+        globalPingData = newData;
+        lastAgentSeen = Date.now(); // ประทับตราเวลาล่าสุดที่ระบบได้รับข้อมูลสดๆ
+    }
+};
 
 const parsePingCSV = () => {
     try {
         if (!fs.existsSync(localCsvPath)) {
-            // ถ้ารันบน Render แล้วไม่มีไฟล์นี้ ให้ส่งข้อมูลล่าสุดที่มีคนยิงผ่าน API เข้ามาไปแสดงแทน
+            // ถ้ารันบน Render แล้วไม่มีไฟล์นี้ ให้ส่งข้อมูลล่าสุดที่มีคนยิงเข้าแรมไปแสดงแทน
             return globalPingData;
         }
 
@@ -55,13 +66,13 @@ const parsePingCSV = () => {
             
             const [stadium, device] = desc.includes("#") ? desc.split("#") : ["ทั่วไป", desc];
             const status = getValue("Last Ping Status") === "Succeeded" ? "ONLINE" : "TIMEOUT";
-            const ping = getValue("Last Ping Time") || "0";
+            const ping = getValue("Last Ping Time") || "-";
 
             return { group: stadium?.trim(), name: device?.trim(), ip, status, ping };
         });
 
-        // บันทึกลงหน่วยความจำกลาง
-        globalPingData = parsedNodes;
+        // บันทึกลงหน่วยความจำกลางพร้อมเก็บเวลา
+        updatePingDataMemory(parsedNodes);
         return parsedNodes;
     } catch (error) {
         console.error("เกิดข้อผิดพลาดในการอ่านไฟล์ CSV:", error);
@@ -70,47 +81,74 @@ const parsePingCSV = () => {
 };
 
 // ==========================================
-// [เพิ่มช่องทางนี้เข้ามา] เปิดช่อง API พิเศษสำหรับระบบออนไลน์บน Render
-// เพื่อให้คุณเขียนสคริปต์ส่ง (POST) ข้อมูลจากคอมขึ้นไปฝากกระจายข่าวบน Cloud ได้
+// [ช่องทางที่ 1] เปิดช่อง API พิเศษสำหรับระบบออนไลน์บน Render (ส่งผ่าน HTTP POST)
 app.post('/api/sync-ping', (req, res) => {
     if (Array.isArray(req.body)) {
-        globalPingData = req.body;
+        // อัปเดตลงหน่วยความจำเซิร์ฟเวอร์
+        updatePingDataMemory(req.body);
         
-        // [เพิ่มบรรทัดนี้] ตะโกนส่งสัญญาณพร้อมข้อมูลชุดใหม่ล่าสุดออกไปหาหน้าเว็บ Vercel ทุกเครื่องทันที!
+        // ตะโกนส่งสัญญาณพร้อมข้อมูลชุดใหม่ล่าสุดออกไปหาหน้าเว็บ Vercel ทุกเครื่องทันที!
         io.emit('ping-update', globalPingData); 
         
-        console.log(`[Cloud Sync] ได้รับข้อมูลใหม่ 9 รายการ และกระจายสัญญาณไปหา Frontend แล้ว`);
+        console.log(`[Cloud Sync via POST] ได้รับข้อมูลใหม่ ${req.body.length} รายการ และกระจายสัญญาณไปหา Frontend แล้ว`);
         return res.status(200).json({ status: "success", message: "Data synced to cloud successfully" });
     }
     return res.status(400).json({ status: "error", message: "Invalid data format" });
 });
 
-
-
 app.get('/', (req, res) => {
     res.send('TLMA Backend Server is Active 🚀');
 });
+
+// ==========================================
+// 🔥 กลไกพิเศษ: ตัวตรวจจับข้อมูลค้าง (Stale Data Checker)
+// ทำหน้าที่ตรวจสอบทุกๆ 5 วินาที ถ้าเกิดว่าเราอยู่บนระบบออนไลน์ (Production) แล้วไม่มี Agent ส่งข้อมูลเข้ามานานเกิน 30 วินาที
+// ระบบจะตั้งค่าสถานะทุกอย่างเป็น TIMEOUT อัตโนมัติ เพื่อไม่ให้หน้าจอค้างข้อมูลเก่าตอนคุณปิดคอมพิวเตอร์ที่รันสคริปต์ปิง
+setInterval(() => {
+    const STALE_TIMEOUT = 30000; // กำหนดขีดจำกัดไว้ที่ 30 วินาที
+    const isProduction = process.env.PORT !== undefined && process.env.PORT != "3000";
+
+    if (isProduction && globalPingData.length > 0 && (Date.now() - lastAgentSeen > STALE_TIMEOUT)) {
+        console.log(`[Stale Detector] ไม่ได้รับการอัปเดตจาก Agent เกิน ${STALE_TIMEOUT / 1000} วินาที ปรับสถานะเป็น TIMEOUT ทั้งหมด`);
+        
+        // แปลงข้อมูลในแรมทั้งหมดให้เป็นตัวแดง / TIMEOUT
+        globalPingData = globalPingData.map(host => ({
+            ...host,
+            status: 'TIMEOUT',
+            ping: '-'
+        }));
+
+        // ส่งแจ้งหน้าจอให้เปลี่ยนสถานะทันที
+        io.emit('ping-update', globalPingData);
+    }
+}, 5000); // วนลูปเช็กทุกๆ 5 วินาที
 // ==========================================
 
 io.on('connection', (socket) => {
-    console.log('มีการเชื่อมต่อเข้ามาใหม่:', socket.id);
+    console.log('มีการเชื่อมต่อเข้ามาใหม่จาก Client:', socket.id);
 
-    // 1. ส่งข้อมูลล่าสุดในแรมให้หน้าจอทันทีเมื่อเชื่อมต่อ
+    // 1. 🔥 ส่งข้อมูลล่าสุดในแรมที่มีอยู่ให้หน้าจอทันทีเมื่อเชื่อมต่อสำเร็จ (แก้ปัญหาเปิดเว็บมาแล้วจอว่างเพื่อรอรอบถัดไป)
     socket.emit('ping-update', globalPingData);
 
-    // 2. [เปิดรับจากคอมพิวเตอร์] ท่อพิเศษรับข้อมูลตรงผ่าน WebSocket ของคอมคุณ
+    // 2. [ช่องทางที่ 2] ท่อพิเศษเปิดรับข้อมูลตรงจากคอมพิวเตอร์ผ่าน WebSocket (กรณีรัน Agent แบบ Socket)
     socket.on('client-ping-sync', (data) => {
         if (Array.isArray(data)) {
-            globalPingData = data;
+            updatePingDataMemory(data);
             // สะท้อนยิงต่อออกไปหาหน้าเว็บ Vercel ทุกเครื่องทันทีแบบ Real-time
             io.emit('ping-update', globalPingData);
             console.log(`[Socket Sync] ซิงค์ข้อมูลสดสำเร็จจำนวน ${data.length} รายการ จากคอมพิวเตอร์`);
         }
     });
 
-    // โหมดอ่านไฟล์เครื่องตัวเอง (รันเทสเฉพาะบน localhost)
+    // โหมดอ่านไฟล์เครื่องตัวเอง (รันเทสเฉพาะบน localhost พอร์ต 3000 หรือเมื่อไม่มีการตั้งพอร์ตสภาวะแวดล้อม)
     let intervalId = null;
     if (process.env.PORT === undefined || process.env.PORT == "3000") {
+        // ดึงข้อมูลครั้งแรกทันทีที่ต่อเสร็จเพื่อความรวดเร็วบน Local
+        const initialLocalData = parsePingCSV();
+        if (initialLocalData && initialLocalData.length > 0) {
+            socket.emit('ping-update', initialLocalData);
+        }
+
         intervalId = setInterval(() => {
             const updatedData = parsePingCSV();
             if (updatedData && updatedData.length > 0) {
@@ -121,11 +159,9 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         if (intervalId) clearInterval(intervalId);
-        console.log('ตัดการเชื่อมต่อ');
+        console.log('Client ตัดการเชื่อมต่อ:', socket.id);
     });
 });
-
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Backend ระบบแชร์ข้อมูล Ping รันสำเร็จที่พอร์ต: ${PORT}`));

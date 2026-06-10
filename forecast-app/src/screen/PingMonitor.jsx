@@ -10,10 +10,10 @@ export default function PingMonitor() {
     const [searchTerm, setSearchTerm] = useState("");
     const prevStatus = useRef({});
 
-    // 🎯 จุดที่แก้ไข: ปรับปรุงตัวประมวลผลข้อมูลให้แกะฟอร์แมตอัตโนมัติ
+    // 🎯 ตัวประมวลผลข้อมูล: แกะฟอร์แมต จัดกลุ่มสนาม และทำระบบแจ้งเตือน Alert
     const processIncomingNodes = (parsedNodes) => {
         const normalizedNodes = parsedNodes.map(node => {
-            // ถ้ารายการไหนมีเครื่องหมาย # (เช่น ข้อมูลดิบจาก Socket) ให้ทำการหั่นแบ่งสนามทันที
+            // ถ้ารายการไหนมีเครื่องหมาย # ให้ทำการหั่นแบ่งสนามทันที
             if (node.name && node.name.includes("#")) {
                 const [stadiumName, deviceName] = node.name.split("#");
                 return {
@@ -22,14 +22,14 @@ export default function PingMonitor() {
                     name: deviceName.trim()
                 };
             }
-            // ถ้าไม่มี # แต่มี group อยู่แล้ว (มาจากระบบดัก CSV) ให้ใช้ค่าเดิม หรือตกไปอยู่กลุ่มทั่วไป
+            // ถ้าไม่มี # แต่มี group อยู่แล้ว ให้ใช้ค่าเดิม หรือตกไปอยู่กลุ่มทั่วไป
             return {
                 ...node,
                 group: node.group ? node.group.trim() : "ทั่วไป"
             };
         });
 
-        // นำข้อมูลที่จัดฟอร์แมตสวยงามแล้วไปอัปเดตสถานะและแจ้งเตือน Alert
+        // นำข้อมูลที่จัดฟอร์แมตแล้วไปอัปเดตสถานะและแจ้งเตือน Alert
         normalizedNodes.forEach(node => {
             updateStats(node);
             if (prevStatus.current[node.ip] === "ONLINE" && node.status === "TIMEOUT") {
@@ -41,7 +41,7 @@ export default function PingMonitor() {
             prevStatus.current[node.ip] = node.status;
         });
 
-        // 🧠 จัดกลุ่มสนามแบบ Dynamic (สนามใหม่งอกเองอัตโนมัติ ไม่ต้องคอย Hardcode ชื่อเพิ่มแล้ว)
+        // 🧠 จัดกลุ่มสนามแบบ Dynamic
         const grouped = normalizedNodes.reduce((acc, node) => {
             if (!acc[node.group]) acc[node.group] = [];
             acc[node.group].push(node);
@@ -66,21 +66,35 @@ export default function PingMonitor() {
                 const ip = getValue("IP Address");
                 const [stadium, device] = desc.includes("#") ? desc.split("#") : ["ทั่วไป", desc];
                 const status = getValue("Last Ping Status") === "Succeeded" ? "ONLINE" : "TIMEOUT";
-                const ping = getValue("Last Ping Time") || "0";
+                const ping = getValue("Last Ping Time") || "-";
                 return { group: stadium, name: device, ip, status, ping };
             });
             if (parsedNodes.length > 0) processIncomingNodes(parsedNodes);
         } catch (error) { console.error("Error fetching CSV:", error); }
     };
 
+    // 🔄 ยุบรวมการเชื่อมต่อ Socket ไว้ใน useEffect ชุดเดียวอย่างถูกต้อง
     useEffect(() => {
         if (Notification.permission !== "granted") Notification.requestPermission();
+        
+        // รันดึงข้อมูลจาก CSV ท้องถิ่นเผื่อไว้รอบแรกก่อน
         fetchPingDataFromCSV();
+
+        // เริ่มต้นการเชื่อมต่อ Socket ไปที่ Backend บน Render
         const socket = io("https://tlma.onrender.com", { transports: ["websocket"] });
-        socket.on("server-ping-broadcast", (data) => {
-            if (data && Array.isArray(data)) processIncomingNodes(data);
+        
+        // ⚡ ฟังท่อหลัก "ping-update" เพื่อรับข้อมูลสดๆ หรือข้อมูล Initial Load จาก Backend ทันที
+        socket.on("ping-update", (data) => {
+            if (data && Array.isArray(data)) {
+                processIncomingNodes(data);
+            }
         });
-        return () => { socket.disconnect(); };
+
+        // คืนค่าฟังก์ชันเพื่อทำความสะอาด Connection ตอนปิดหน้าจอ
+        return () => { 
+            socket.off("ping-update");
+            socket.disconnect(); 
+        };
     }, []);
 
     const filteredGroupedNodes = Object.entries(groupedNodes).reduce((acc, [stadium, devices]) => {
