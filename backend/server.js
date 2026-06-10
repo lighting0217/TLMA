@@ -95,22 +95,30 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('Frontend เชื่อมต่อเข้ามาแล้ว:', socket.id);
 
-    // 1. ส่งข้อมูลล่าสุดให้ทันทีที่ต่อเข้ามา
-    socket.emit('ping-update', globalPingData.length > 0 ? globalPingData : parsePingCSV());
+    // 1. ส่งข้อมูลล่าสุดในแรมให้หน้าจอทันทีเมื่อเชื่อมต่อ
+    socket.emit('ping-update', globalPingData);
 
-    // 2. ตั้งเวลาลูปให้อ่านไฟล์ (จะทำงานได้ต่อเนื่องเฉพาะตอนรันหลังบ้านบนคอมตัวเอง)
-    const intervalId = setInterval(() => {
-        const updatedData = parsePingCSV();
-        if (updatedData && updatedData.length > 0) {
-            socket.emit('ping-update', updatedData);
-        }
-    }, 2000); 
+    // 2. [แก้ไขจุดนี้] เปิดลูปอ่านไฟล์เฉพาะตอนรันเทสบนคอมตัวเอง (พอร์ต 3000) เท่านั้น
+    // ถ้าขึ้นคลาวด์ Render (ซึ่งมักจะเป็นพอร์ต 10000) จะไม่รันลูปนี้เพื่อป้องกันการเขียนข้อมูลทับเป็นค่าว่าง
+    let intervalId = null;
+    if (process.env.PORT === undefined || process.env.PORT == "3000") {
+        console.log("[Local Mode] เปิดระบบลูปอ่านไฟล์ CSV ในเครื่องทุกๆ 2 วินาที");
+        intervalId = setInterval(() => {
+            const updatedData = parsePingCSV();
+            if (updatedData && updatedData.length > 0) {
+                socket.emit('ping-update', updatedData);
+            }
+        }, 2000);
+    } else {
+        console.log("[Cloud Mode] สแตนด์บายรับข้อมูลสดจากสคริปต์คอมพิวเตอร์ผ่าน API");
+    }
 
     socket.on('disconnect', () => {
-        clearInterval(intervalId);
+        if (intervalId) clearInterval(intervalId);
         console.log('Frontend ตัดการเชื่อมต่อ');
     });
 });
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Backend ระบบแชร์ข้อมูล Ping รันสำเร็จที่พอร์ต: ${PORT}`));
