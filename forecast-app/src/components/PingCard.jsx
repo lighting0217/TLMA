@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PingChart from "./PingChart";
 
 export default function PingCard({ stadiumName, devices, history }) {
-    // 🔍 State สำหรับควบคุมการเปิด/ปิด Dropdown แสดงกราฟของสนามนี้
     const [isOpen, setIsOpen] = useState(false);
 
     const hasFeed = stadiumName.includes(" - ");
@@ -25,7 +24,7 @@ export default function PingCard({ stadiumName, devices, history }) {
         onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--border-hover)"}
         onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border)"}
         >
-            {/* ─── แถวหลัก (Always Visible) ─── */}
+            {/* แถวหลัก (Always Visible) */}
             <div style={{ 
                 display: "flex", 
                 alignItems: "center", 
@@ -33,8 +32,6 @@ export default function PingCard({ stadiumName, devices, history }) {
                 flexWrap: "wrap",
                 gap: "12px"
             }}>
-                
-                {/* ฝั่งซ้าย: เลข Feed และ ชื่อสนาม */}
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: "1 1 280px" }}>
                     {hasFeed && (
                         <span style={{
@@ -55,7 +52,6 @@ export default function PingCard({ stadiumName, devices, history }) {
                     </h3>
                 </div>
 
-                {/* ฝั่งขวา: รายชื่ออุปกรณ์เรียงแนวนอน (เขียว/แดง ตามสถานะปิง) */}
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     {devices.map((dev, i) => {
                         const isOnline = dev.status === "ONLINE";
@@ -74,8 +70,7 @@ export default function PingCard({ stadiumName, devices, history }) {
                                     border: isOnline ? "1px solid rgba(16, 185, 129, 0.15)" : "1px solid rgba(244, 63, 94, 0.15)",
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: "6px",
-                                    transition: "all 0.2s ease"
+                                    gap: "6px"
                                 }}
                             >
                                 <span style={{ fontSize: "8px" }}>{isOnline ? "●" : "❌"}</span>
@@ -84,7 +79,6 @@ export default function PingCard({ stadiumName, devices, history }) {
                         );
                     })}
 
-                    {/* ปุ่มกดเปิด/ปิด Dropdown กราฟ */}
                     <button 
                         onClick={() => setIsOpen(!isOpen)}
                         style={{
@@ -109,32 +103,30 @@ export default function PingCard({ stadiumName, devices, history }) {
                 </div>
             </div>
 
-            {/* ─── กล่อง Dropdown Panel (แสดงข้อมูลเชิงลึกและกราฟย่อยเมื่อกดเปิด) ─── */}
+            {/* กล่อง Dropdown Panel */}
             {isOpen && (
                 <div style={{
                     marginTop: "12px",
                     paddingTop: "14px",
                     borderTop: "1px solid rgba(255, 255, 255, 0.04)",
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                     gap: "12px",
-                    // เพิ่มลูกเล่นให้กล่องค่อยๆ คลี่ลงมาอย่างนุ่มนวล
-                    animation: "fadeIn 0.25s ease-out"
+                    animation: "fadeIn 0.2s ease-out"
                 }}>
                     {devices.map((dev, i) => {
                         const isOnline = dev.status === "ONLINE";
                         const historyData = history?.[dev.ip] || [];
                         return (
                             <div key={i} style={{
-                                background: "rgba(0, 0, 0, 0.15)",
-                                border: "1px solid rgba(255, 255, 255, 0.02)",
-                                borderRadius: "10px",
-                                padding: "10px 12px",
+                                background: "rgba(15, 23, 42, 0.6)",
+                                border: "1px solid rgba(255, 255, 255, 0.03)",
+                                borderRadius: "12px",
+                                padding: "12px",
                                 display: "flex",
                                 flexDirection: "column",
-                                gap: "6px"
+                                gap: "8px"
                             }}>
-                                {/* หัวแถวย่อยใน Dropdown */}
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <span style={{ fontWeight: "700", fontSize: "13px", color: isOnline ? "var(--success)" : "var(--danger)" }}>
                                         {dev.name}
@@ -144,22 +136,26 @@ export default function PingCard({ stadiumName, devices, history }) {
                                     </span>
                                 </div>
                                 
-                                {/* แสดง IP Address */}
-                                <div style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "var(--text-muted)" }}>
+                                <div style={{ 
+                                    fontFamily: "var(--mono)", 
+                                    fontSize: "12px", 
+                                    color: "#cbd5e1", 
+                                    fontWeight: "500",
+                                    letterSpacing: "0.3px"
+                                }}>
                                     IP: {dev.ip}
                                 </div>
 
-                                {/* กล่องวางเส้นกราฟ Sparkline */}
+                                {/* 📉 ลบ display: flex ออก และปรับแก้ padding ข้างเป็น 0px เพื่อให้กราฟวิ่งชนขอบสนิทร้อยเปอร์เซ็นต์ */}
                                 <div style={{ 
-                                    background: "rgba(255, 255, 255, 0.01)", 
-                                    borderRadius: "6px", 
-                                    padding: "4px 0",
-                                    display: "flex", 
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    height: "30px"
+                                    background: "rgba(0, 0, 0, 0.35)", 
+                                    borderRadius: "8px", 
+                                    padding: "8px 0px", 
+                                    width: "100%",
+                                    boxSizing: "border-box",
+                                    overflow: "hidden" /* ล็อคไม่ให้เส้นกราฟเล็ดลอดมุมโค้งมน */
                                 }}>
-                                    <PingChart data={historyData} />
+                                    <PingChart data={historyData} isOnline={isOnline} />
                                 </div>
                             </div>
                         );
