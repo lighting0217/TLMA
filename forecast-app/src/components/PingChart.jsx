@@ -2,39 +2,43 @@ import React from 'react';
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
 
 export default function PingChart({ data, isOnline }) {
-    // กำหนดให้มี 20 จุดข้อมูลบนหน้าจอ เพื่อความละเอียดและยาวสะใจชนขอบพอดี
     const maxPoints = 20; 
     let points = data ? [...data] : [];
 
-    // 🧠 ระบบอัจฉริยะ Auto-Padding: บังคับให้กราฟยาวเต็มขอบตลอดเวลา ไม่ว่าจะพึ่งเปิดเว็บบอร์ดหรือกำลัง Offline
+    // 1. จัดการเคส Offline หรือไม่มีข้อมูลให้เป็นเส้นตรงสีแดงล่างสุด
     if (!isOnline || points.length === 0) {
-        // ถ้า Offline หรือไม่มีข้อมูล ให้ทำเป็นเส้น Flatline (ราบเรียบขนานก้นกล่อง) ยาวเต็มขอบพาดผ่านสายตา
         points = new Array(maxPoints).fill(0);
     } else if (points.length < maxPoints) {
-        // ถ้าพึ่งเปิดหน้าเว็บ ข้อมูลยังไม่ครบ 20 จุด ให้เติมจุดแรกย้อนหลังไปในอดีตจนเต็มขอบซ้าย
+        // ถ้าข้อมูลยังไม่ครบ 20 จุด ให้เติมจุดแรกย้อนหลังไปให้เต็มกล่อง
         const fillCount = maxPoints - points.length;
         const padding = new Array(fillCount).fill(points[0]);
         points = [...padding, ...points];
     } else {
-        // ถ้าข้อมูลไหลมาเยอะแล้ว ให้ตัดเอาเฉพาะ 20 ค่าล่าสุดมาแสดงผล
         points = points.slice(-maxPoints);
     }
 
+    // แปลงข้อมูลให้อยู่ในรูปแบบที่ Recharts เอาไปวาดได้
     const chartData = points.map((val) => ({ v: val }));
 
+    // 🧠 คำนวณหาค่า Ping ที่สูงที่สุดในประวัติชุดนี้ เพื่อเอาไปตั้งเพดานแกน Y ให้กราฟไม่ทะลุจอ
+    const maxPingInHistory = Math.max(...points, 10); 
+    const yAxisUpperGoal = maxPingInHistory + 10; // บวกเผื่อไว้ 10ms ให้มีช่องไฟด้านบนสวยๆ
+
     return (
-        <div style={{ width: "100%", height: "32px", position: "relative" }}>
+        <div style={{ width: "100%", height: "36px", position: "relative" }}>
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>
-                    {/* ตั้งค่าแกน Y ให้สมดุล: ถ้าออฟไลน์ให้เส้นอยู่ล่างสุดพอดิบพอดี ไม่ลอยเคว้งคว้าง */}
-                    <YAxis hide domain={isOnline ? ['auto', 'auto'] : [0, 100]} />
+                <LineChart data={chartData} margin={{ top: 4, bottom: 2, left: 0, right: 0 }}>
+                    
+                    {/* 🎯 แกน Y แบบปลดล็อก: เริ่มที่ 0 ถึงค่าสูงสุดที่ปิงเจอ บังคับให้กราฟขึ้นลงเห็นความสวิงชัดเจน */}
+                    <YAxis hide domain={[0, isOnline ? yAxisUpperGoal : 100]} />
+                    
                     <Line 
-                        type="monotone" 
+                        type="monotone" /* เส้นโค้งนุ่มนวลตามค่า ms */
                         dataKey="v" 
-                        stroke={isOnline ? "#10b981" : "#f43f5e"} /* ออนไลน์ไฟเขียววิ่ง / ออฟไลน์เส้นนิ่งสีแดง */
+                        stroke={isOnline ? "#10b981" : "#f43f5e"} /* ออนไลน์เขียว / ออฟไลน์แดง */
                         strokeWidth={2} 
-                        dot={false} /* ปิดจุดกลมทิ้งไป เพื่อให้เส้นยาวเรียบเนียนสไตล์ Enterprise */
-                        isAnimationActive={false} 
+                        dot={false} /* ปิดจุดเพื่อความสะอาดตา */
+                        isAnimationActive={false} /* ปิดอนิเมชันเพื่อให้กราฟอัปเดตเรียลไทม์ไม่หน่วงการ์ดจอ */
                     />
                 </LineChart>
             </ResponsiveContainer>
