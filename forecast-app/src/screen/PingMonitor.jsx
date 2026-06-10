@@ -95,21 +95,14 @@ export default function PingMonitor() {
                 onBlur={(e) => e.target.style.borderColor = "var(--border)"}
             />
             
-            {/* 🎛️ ปรับกริดให้เหมาะสม กว้างขึ้น ไม่บีบตัวอักษรแตก */}
-<div style={{
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px",
+<div style={{ 
+    display: "flex", 
+    flexDirection: "column", 
+    gap: "14px",             
     width: "100%"
 }}>
     {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
-        <div key={name} style={{ width: "100%" }}>
-            <PingCard
-                stadiumName={name}
-                devices={devs}
-                history={history}
-            />
-        </div>
+        <PingCard key={name} stadiumName={name} devices={devs} history={history} />
     ))}
 </div>
             
