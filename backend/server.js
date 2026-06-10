@@ -75,11 +75,17 @@ const parsePingCSV = () => {
 app.post('/api/sync-ping', (req, res) => {
     if (Array.isArray(req.body)) {
         globalPingData = req.body;
-        io.emit('ping-update', globalPingData); // ยิงกระจายไปอัปเดตหน้าจอ Vercel ทุกเครื่องทันที
+        
+        // [เพิ่มบรรทัดนี้] ตะโกนส่งสัญญาณพร้อมข้อมูลชุดใหม่ล่าสุดออกไปหาหน้าเว็บ Vercel ทุกเครื่องทันที!
+        io.emit('ping-update', globalPingData); 
+        
+        console.log(`[Cloud Sync] ได้รับข้อมูลใหม่ 9 รายการ และกระจายสัญญาณไปหา Frontend แล้ว`);
         return res.status(200).json({ status: "success", message: "Data synced to cloud successfully" });
     }
     return res.status(400).json({ status: "error", message: "Invalid data format" });
 });
+
+
 
 app.get('/', (req, res) => {
     res.send('TLMA Backend Server is Active 🚀');
