@@ -1,111 +1,160 @@
-# TLMA - Real-time Network Ping Monitor (PingInfoView to React Cloud Agent)
+# TLMA - Real-time Network Ping Monitor  
+### (PingInfoView to React Cloud Agent)
 
-**TLMA (Total League Monitor Agent)** คือระบบ Local Agent สำเร็จรูปที่ทำหน้าที่มอนิเตอร์และตรวจสอบสถานะเครือข่ายของอุปกรณ์ตามสนามแข่งขันต่าง ๆ แบบ Real-time ตัวระบบถูกออกแบบมาเพื่อช่วยอุดรอยต่อระหว่างโปรแกรม Desktop (NirSoft PingInfoView) กับคลาวด์แอปพลิเคชัน (React + Node.js) โดยทำหน้าประมวลผล จัดกลุ่มข้อมูลโครงสร้างไฟล์ภาษาไทย และส่งผ่านข้อมูลความหน่วง (Latency) ไปยัง Backend บนคลาวด์ผ่าน **WebSockets** ทันทีโดยไม่ต้องคอยกดรีเฟรชหน้าจอ
+TLMA (Total League Monitor Agent) คือระบบ **Local Agent สำหรับมอนิเตอร์สถานะเครือข่ายแบบ Real-time** ที่ออกแบบมาเพื่อเชื่อมระหว่างโปรแกรม Desktop อย่าง **NirSoft PingInfoView** กับระบบคลาวด์แอปพลิเคชัน (React + Node.js)
 
----
-
-## 🚀 คุณสมบัติเด่น (Features)
-
-* **Auto-Group Configuration (Step 0):** จัดกลุ่มอุปกรณ์ตามรายชื่อสนามแข่งขันหรือกลุ่มที่ต้องการให้อัตโนมัติด้วย PowerShell สคริปต์ โดยแยกแยะแท็ก `Feed` และจัดฟอร์แมตโครงสร้างใหม่ที่ PingInfoView เข้าใจได้ทันที
-* **Smart Encoding Support (Unicode FF FE):** รองรับภาษาไทย 100% แก้ไขปัญหาตัวอักษรเพี้ยนหรือเป็นต่างดาว ด้วยการตรวจจับและบังคับแปลงรหัสไฟล์แบบ **UTF-16 Little Endian (Unicode)** สำหรับโปรแกรมดั้งเดิม และส่งออกเป็น **UTF-8 (No BOM)** สำหรับ Node.js
-* **Automated Scheduled Ping (Step 1):** สั่งการ PingInfoView ทำการปิงอุปกรณ์พร้อมกันและส่งออกผลลัพธ์เป็น Raw Text ในพื้นหลังแบบเงียบๆ ตามรอบเวลาที่กำหนด
-* **Data Parsing & Extraction (Step 2 & 3):** สกัดข้อมูลดิบที่ได้จากการปิง นำมาถอดโครงสร้างความสัมพันธ์ (Group, Name, IP, Status, Latency) และจัดระเบียบให้กลายเป็น Clean JSON Array ที่พร้อมใช้งาน
-* **Real-time Synchronization (Step 4):** เชื่อมต่อและยิงข้อมูล Payload ขึ้นสู่ระบบคลาวด์ตรงไปยังหน้าจอของทีมงานผ่านโปรโตคอล WebSockets (Socket.io-client) ทุกๆ 10 วินาที
+ระบบนี้ทำหน้าที่ประมวลผลข้อมูล Ping, จัดกลุ่มอุปกรณ์, แปลงโครงสร้างข้อมูล และส่งต่อขึ้น Cloud Backend ผ่าน WebSockets แบบ Real-time โดยไม่ต้องรีเฟรชหน้าเว็บ
 
 ---
 
-## 🏗️ โครงสร้างสถาปัตยกรรมระบบ (System Architecture)
-[Local Host File]
-│ (บันทึกแบบ UTF-16 LE จากระบบจัดแจงอุปกรณ์)
-▼
-[Step 0: PowerShell Pre-process] ──> คลีนและสร้างไฟล์ hosts_generated.txt
+## 🚀 Features
+
+### 🔹 Auto-Group Configuration (Step 0)
+- จัดกลุ่มอุปกรณ์อัตโนมัติตาม Feed และชื่อสนาม
+- ใช้ PowerShell ในการ preprocess และสร้างไฟล์ hosts ใหม่
+- รองรับโครงสร้างภาษาไทยแบบเต็มรูปแบบ
+
+### 🔹 Smart Encoding Support (UTF-16 LE)
+- รองรับภาษาไทย 100%
+- แก้ปัญหาตัวอักษรเพี้ยน (mojibake)
+- แปลงไฟล์ระหว่าง:
+  - PingInfoView → UTF-16 LE
+  - Node.js → UTF-8 (No BOM)
+
+### 🔹 Automated Ping Execution (Step 1)
+- สั่ง PingInfoView แบบ CLI
+- รัน Ping แบบ background
+- Export ผลลัพธ์เป็น raw text อัตโนมัติ
+
+### 🔹 Data Parsing Engine (Step 2–3)
+- แยกโครงสร้างข้อมูล:
+  - Group (Feed)
+  - Device Name
+  - IP Address
+  - Status
+  - Latency
+- แปลงเป็น JSON พร้อมใช้งาน
+
+### 🔹 Real-time WebSocket Sync (Step 4)
+- ส่งข้อมูลผ่าน `socket.io-client`
+- อัปเดตทุก ~10 วินาที
+- รองรับ Dashboard แบบ Real-time บน React
+
+---
+
+## 🏗️ System Architecture
+
+
+Local Hosts File (UTF-16 LE)
 │
 ▼
-[Step 1: PingInfoView.exe] ───────> สั่งรันคำสั่งปิงแบบ CLI และเซฟ raw_ping.txt
+Step 0: PowerShell Pre-process
+→ hosts_generated.txt
 │
 ▼
-[Step 2-3: PowerShell Parser] ────> แกะบล็อกข้อมูลดิบ แปลงเป็น payload.json (UTF-8)
+Step 1: PingInfoView.exe
+→ raw_ping.txt
 │
 ▼
-[Step 4: Node.js Socket Client] ──> ยิงเชื่อมต่อสตรีมข้อมูลผ่าน WebSockets
+Step 2–3: PowerShell Parser
+→ payload.json (UTF-8)
 │
 ▼
-┌───┴────────────────────────┐
-│ Cloud Backend (Render)     │ <── ยิงตรงไปที่ https://tlma.onrender.com
-└───┬────────────────────────┘
-│ (Broadcast ไปยังผู้ใช้งานทุกคนที่เปิดจออยู่)
+Step 4: Node.js Socket Client
+│
 ▼
-[React Frontend Web Application] ──> อัปเดตสถานะ ONLINE / TIMEOUT ทันทีแบบ Real-time
+Cloud Backend (Render)
+https://tlma.onrender.com
+│
+▼
+React Frontend Dashboard
+→ Real-time Status Update (ONLINE / TIMEOUT)
 
 
 ---
 
-## 📂 โครงสร้างโฟลเดอร์และการจัดวางไฟล์ (Directory Layout)
+## 📁 Directory Structure
 
-เพื่อให้สคริปต์อัตโนมัติทำงานได้ถูกต้องโดยไม่มีข้อผิดพลาด กรุณาจัดเตรียมโฟลเดอร์และไฟล์ตามโครงสร้างดังต่อไปนี้:
 
-C:\
-├── Test\                                   <-- โฟลเดอร์พักไฟล์ชั่วคราว (สคริปต์จะสร้างและลบไฟล์ที่นี่)
-│   ├── hosts_generated.txt                 <-- ไฟล์ที่ผ่านการกรองและจัดกลุ่มแล้ว (สคริปต์สร้างให้อัตโนมัติ)
-│   ├── raw_ping.txt                        <-- ไฟล์ผลลัพธ์ดิบจากโปรแกรม PingInfoView (สคริปต์สร้างให้อัตโนมัติ)
-│   └── payload.json                        <-- ข้อมูล JSON สะอาดที่รอส่งขึ้นคลาวด์ (สคริปต์สร้างและลบให้อัตโนมัติ)
+C:
+├── Test
+│ ├── hosts_generated.txt
+│ ├── raw_ping.txt
+│ └── payload.json
 │
-└── Users\Wuttikorn\
-    ├── Downloads\Compressed\pinginfoview-x64-v3.25\
-    │   ├── PingInfoView.exe                <-- ตัวโปรแกรมหลักของ PingInfoView
-    │   └── PingInfoView_hosts.txt          <-- ไฟล์ตั้งค่าอุปกรณ์เริ่มต้น (คุณต้องแก้ไขไฟล์นี้)
-    │
-    └── Documents\TLF\backend\
-        ├── node_modules\                   <-- โฟลเดอร์โมดูลของ Node.js
-        │   └── socket.io-client\           <-- โมดูลจัดการฝั่ง Client ของ WebSocket
-        └── ping_agent.bat                  <-- บัตช์ไฟล์หลักที่ใช้ในการรันลูป (โค้ดนี้)
-📝 วิธีฟอร์แมตไฟล์ต้นทาง (Hosts Configuration Guide)
-ไฟล์ตั้งค่าเริ่มต้นที่ตำแหน่ง C:\Users\Wuttikorn\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt จะต้องเขียนขึ้นตามรูปแบบ (Pattern) นี้ เพื่อให้ระบบแยกแยะชื่อสนามและชื่ออุปกรณ์ได้อย่างถูกต้อง:
+├── Users\Wuttikorn
+│ └── Downloads\Compressed\pinginfoview-x64-v3.25
+│ ├── PingInfoView.exe
+│ └── PingInfoView_hosts.txt
+│
+├── Documents\TLF\backend
+│ └── node_modules
+│ └── socket.io-client
+│
+└── ping_agent.bat
 
-Plaintext
-Feed 25
-58.137.114.84 เลย ริเวอร์ไซด์ สเตเดียม#IPA
+
+---
+
+## 📝 Hosts Configuration Guide
+
+ไฟล์:
+
+C:\Users\Wuttikorn\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt
+
+
+### 🔸 Format ตัวอย่าง
+
+
+Feed 25 58.137.114.84 เลย ริเวอร์ไซด์ สเตเดียม#IPA
 58.137.114.92 เลย ริเวอร์ไซด์ สเตเดียม#IPB
 58.137.114.101 เลย ริเวอร์ไซด์ สเตเดียม#R1
 58.137.114.102 เลย ริเวอร์ไซด์ สเตเดียม#R2
 
-Feed 20
-14.207.198.68 สนามยูนิฟ ฟุตบอลปาร์ค#IPA
+Feed 20 14.207.198.68 สนามยูนิฟ ฟุตบอลปาร์ค#IPA
 14.207.207.36 สนามยูนิฟ ฟุตบอลปาร์ค#IPB
 14.207.207.45 สนามยูนิฟ ฟุตบอลปาร์ค#R1
 14.207.207.46 สนามยูนิฟ ฟุตบอลปาร์ค#R2
-🔍 กฎเหล็กในการกรอกข้อมูล:
-การขึ้นต้นด้วยคำว่า Feed [เลข] จะถือเป็นการเปิดกลุ่มใหม่ อุปกรณ์ถัดจากบรรทัดนั้นจะถูกจัดเข้ากลุ่มนี้ทั้งหมดจนกว่าจะเจอคำว่า Feed ใหม่
 
-ใช้เครื่องหมายสเปซ (Space) คั่นระหว่าง IP Address และ รายละเอียด
 
-ใช้เครื่องหมายแฮชแท็ก (#) ในการระบุชื่อเรียกเฉพาะของตัวอุปกรณ์ปลายทาง เช่น #IPA, #IPB, #R1, #R2 ส่วนข้อความด้านหน้าเครื่องหมาย # จะถูกนำไปรวมกับคำว่า Feed เพื่อสร้างเป็นชื่อกลุ่มสนาม
+---
 
-📦 สิ่งที่จำเป็นต้องมีก่อนใช้งาน (Prerequisites)
-ระบบปฏิบัติการ Windows 7 / 10 / 11 (เนื่องจากต้องใช้งาน PowerShell และสคริปต์คิวคำสั่งแบบบัตช์ไฟล์)
+### ⚠️ Rules
 
-Node.js ติดตั้งลงในเครื่อง (แนะนำเวอร์ชัน LTS ล่าสุด)
+- `Feed [number]` = เริ่มกลุ่มใหม่
+- ทุกอุปกรณ์หลัง Feed จะอยู่ในกลุ่มเดียวกัน
+- ใช้ `Space` แยก IP และชื่อ
+- ใช้ `#` ระบุอุปกรณ์ (IPA, IPB, R1, R2)
+- ข้อความก่อน `#` = ชื่อสนาม
 
-ตรวจสอบให้แน่ใจว่าได้ติดตั้งโมดูล socket.io-client ภายในโฟลเดอร์ backend เรียบร้อยแล้ว ด้วยคำสั่ง:
+---
 
-Bash
+## 📦 Prerequisites
+
+- Windows 7 / 10 / 11
+- Node.js LTS
+- PowerShell (built-in)
+- PingInfoView (NirSoft)
+
+ติดตั้ง dependencies:
+
+```bash
 cd C:\Users\Wuttikorn\Documents\TLF\backend
 npm install socket.io-client
-🏃‍♂️ วิธีการเปิดใช้งานเครื่องส่งสัญญาณ (How to Run)
-นำโค้ดคำสั่งในบัตช์ไฟล์ที่แก้ไขล่าสุดไปเซฟเป็นไฟล์ชื่อ ping_agent.bat
+🏃‍♂️ How to Run
+สร้างไฟล์ ping_agent.bat
+วางโค้ด automation script ลงไป
+ดับเบิ้ลคลิกเพื่อเริ่มระบบ
 
-ดับเบิ้ลคลิก (Double-click) เปิดไฟล์ ping_agent.bat ขึ้นมา
+ระบบจะรันวนลูป:
 
-ระบบจะทำการรันลูปวนซ้ำตามลำดับขั้นตอน (Step 0 ถึง Step 4) และจะขึ้นข้อความแจ้งเตือนสถานะความสำเร็จในทุกๆ รอบ 10 วินาที ดังนี้:
+Step 0 → Step 1 → Step 2 → Step 3 → Step 4
+✅ Success Message
+Cloud Sync Status: Success via WebSockets connection!
+📊 JSON Payload Format
 
-Cloud Sync Status: Success via WebSockets connection! แปลว่าข้อมูลส่งขึ้นระบบคลาวด์และกระจายไปยังหน้าเว็บ React เรียบร้อยแล้ว
+ตัวอย่างข้อมูลที่ส่งไป Cloud:
 
-คุณสามารถย่อหน้าต่างจอดำ (Command Prompt) นี้ลงไปได้เลย ระบบจะทำงานอยู่เบื้องหลังตราบเท่าที่คอมพิวเตอร์ยังทำงานและเชื่อมต่ออินเทอร์เน็ตอยู่
-
-📊 หน้าตาโครงสร้างข้อมูล JSON (Data Payload Format)
-เมื่อ PowerShell ทำการแปลงข้อมูลจากไฟล์ Raw Text เสร็จสิ้น จะได้โครงสร้างอาเรย์ของออบเจกต์ (Array of Objects) ส่งต่อไปยังเซิร์ฟเวอร์ดังนี้:
-
-JSON
 [
   {
     "group": "Feed 25 - เลย ริเวอร์ไซด์ สเตเดียม",
@@ -122,19 +171,43 @@ JSON
     "ping": "15"
   }
 ]
-⚠️ การดูแลรักษาและการแก้ไขปัญหา (Troubleshooting)
-อาการ: ภาษาไทยบนหน้าเว็บเพี้ยนเป็นสัญลักษณ์แปลกๆ
+⚠️ Troubleshooting
+❌ ภาษาไทยเพี้ยน
 
-สาเหตุ: เกิดจากไฟล์ตั้งค่า PingInfoView_hosts.txt ถูกเซฟมาในฟอร์แมตอื่นที่ไม่ใช่ Unicode (UTF-16 LE)
+สาเหตุ: ไฟล์ไม่ใช่ UTF-16 LE
+วิธีแก้:
 
-วิธีแก้: ให้เปิดไฟล์นั้นด้วยโปรแกรม Notepad กดเลือก File > Save As แล้วตรวจสอบตรงช่อง Encoding ให้มั่นใจว่าเป็น UTF-16 LE หรือ Unicode แล้วกดบันทึกทับไฟล์เดิม
+เปิดไฟล์ด้วย Notepad
+Save As → Encoding: UTF-16 LE
+❌ Cloud Sync Failed / Timeout
 
-อาการ: หน้าจอฟ้องข้อความ Cloud Sync Failed หรือมีการเกิด Timeout 5 วินาที
+สาเหตุ:
 
-สาเหตุ 1: อินเทอร์เน็ตที่เครื่อง Agent ฝั่ง Local หลุด หรือมีความหน่วงสูงมากเกินไป
+อินเทอร์เน็ตหลุด
+Render instance sleep
 
-สาเหตุ 2: เป็นข้อจำกัดของเซิร์ฟเวอร์คลาวด์แพลนฟรี (Render Cloud) หากไม่มี Traffic เข้ามานาน ตัว Instance จะเข้าสู่โหมดหลับ (Sleep Mode) การเปิดรันครั้งแรกในรอบวันอาจจะเกิด Timeout ได้ ให้รอประมาณ 50-60 วินาที เพื่อให้ตัวคลาวด์ตื่นเต็มที่ จากนั้นรอบถัดไปจะทำงานได้ราบรื่นเป็นปกติ
+วิธีแก้:
 
-อาการ: สคริปต์แจ้งเตือนหาไดรฟ์หรือโฟลเดอร์ไม่เจอ
+รอ 50–60 วินาทีให้ server ตื่น
+ลองใหม่รอบถัดไป
+❌ หาโฟลเดอร์ไม่เจอ
 
-วิธีแก้: ตรวจสอบให้มั่นใจว่าได้สร้างโฟลเดอร์ว่างเปล่าชื่อ C:\Test เตรียมไว้ในเครื่องแล้ว และตรวจสอบ Path ที่ระบุในตัวแปรต่างๆ ภายในสคริปต์ .bat ว่าสะกดตรงตามโฟลเดอร์ที่มีอยู่จริงในคอมพิวเตอร์ของคุณหรือไม่
+สาเหตุ:
+
+path ไม่ตรง
+ไม่มี C:\Test
+
+วิธีแก้:
+
+สร้างโฟลเดอร์ C:\Test
+ตรวจสอบ path ใน .bat script
+📡 Summary
+
+TLMA คือระบบ bridge ระหว่าง:
+
+Desktop Ping Tool (PingInfoView)
+Local Processing (PowerShell + Batch)
+Cloud Backend (Node.js + Socket.io)
+Frontend Dashboard (React)
+
+เพื่อให้การ monitor network แบบสนามแข่งขันเป็น Real-time อย่างแท้จริง
