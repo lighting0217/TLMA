@@ -1,4 +1,4 @@
-# 📡 TLMA - Real-time Network Ping Monitor  
+# 📡 TLMA - Real-time Network Ping Monitor
 ### (PingInfoView to React Cloud Agent)
 
 **TLMA** คือระบบ **Local Agent สำหรับมอนิเตอร์สถานะเครือข่ายแบบ Real-time** ที่ออกแบบมาเพื่อเชื่อมโยงการทำงานระหว่างซอฟต์แวร์เดสก์ท็อปอย่าง **NirSoft PingInfoView** เข้ากับระบบคลาวด์แอปพลิเคชัน (React + Node.js)
@@ -26,12 +26,7 @@
 * **Auto Export:** บันทึกผลลัพธ์การตรวจสอบออกมาเป็นไฟล์ข้อความดิบ (Raw Text) โดยอัตโนมัติเมื่อจบรอบ
 
 ### 🔹 Data Parsing Engine (Step 2–3)
-* **แยกโครงสร้างข้อมูลอย่างละเอียด (Data Extraction):** สามารถแยกแยะข้อมูลสำคัญได้อย่างแม่นยำ เช่น:
-  * กลุ่มของอุปกรณ์ (Group / Feed)
-  * ชื่อของอุปกรณ์ (Device Name)
-  * หมายเลขไอพี (IP Address)
-  * สถานะการเชื่อมต่อ (Status)
-  * ความเร็วในการตอบสนอง (Latency / Ping Time)
+* **แยกโครงสร้างข้อมูลอย่างละเอียด (Data Extraction):** สามารถแยกแยะข้อมูลสำคัญได้อย่างแม่นยำ เช่น กลุ่มของอุปกรณ์ (Feed), ชื่ออุปกรณ์, หมายเลขไอพี, สถานะ และความเร็วตอบสนอง (Latency)
 * **JSON Serialization:** แปลงข้อมูลเครือข่ายทั้งหมดให้อยู่ในรูปแบบโครงสร้าง JSON พร้อมส่งต่อทันที
 
 ### 🔹 Real-time WebSocket Sync (Step 4)
@@ -39,8 +34,8 @@
 * **Interval Sync:** ตั้งเวลาส่งชุดข้อมูลอัปเดตขึ้นระบบคลาวด์ทุกๆ ประมาณ 10 วินาที
 * **Live Dashboard:** ส่งตรงข้อมูลเพื่อไปแสดงผลบนหน้าเว็บ React Frontend Dashboard แบบ Real-time
 
-
 ---
+
 ## 🧱 System Architecture
 
 ระบบทำงานร่วมกันเป็นขั้นตอน (Data Pipeline) จาก Local Machine ส่งตรงไปยัง Cloud Backend ดังนี้:
@@ -50,7 +45,7 @@
 * **Step 1:** โปรแกรม PingInfoView.exe ประมวลผล ➡️ บันทึกผลลัพธ์ลง `raw_ping.txt`
 * **Step 2-3:** PowerShell Parser ➡️ แปลงไฟล์และจัดรูปแบบข้อมูลให้อยู่ในรูป `payload.json (UTF-8)`
 * **Step 4:** Node.js Socket Client ➡️ ส่งข้อมูลแบบ Real-time ผ่าน WebSockets ไปยังเซิร์ฟเวอร์
-* **Cloud Backend:** ประมวลผลบนระบบ Render *(หมายเหตุ: URL ของ API จะถูกเรียกใช้งานผ่าน Environment Variable เพื่อความปลอดภัย)*
+* **Cloud Backend:** ประมวลผลบนเซิร์ฟเวอร์คลาวด์ *(หมายเหตุ: URL ของ API จะถูกเรียกใช้งานผ่าน Environment Variable เพื่อความปลอดภัย)*
 * **Output:** React Frontend Dashboard ➡️ แสดงผลอัปเดตสถานะแบบ Real-time (`ONLINE` / `TIMEOUT`)
 
 ---
@@ -78,9 +73,12 @@ C:\<YOUR_PROJECT_PATH>\backend\
     └── socket.io-client\
         └── ping_agent.bat
 ```
+
+---
+
 ## 📝 Hosts Configuration Guide
 
-ไฟล์สำเนาสำหรับใช้งาน:
+ไฟล์คอนฟิกสำหรับใช้กับระบบมอนิเตอร์:
 ```text
 C:\Users\<YOUR_WINDOWS_USERNAME>\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt
 ```
@@ -99,25 +97,23 @@ Feed 20 10.0.0.XX สนามยูนิฟ ฟุตบอลปาร์ค#
 10.0.0.XX สนามยูนิฟ ฟุตบอลปาร์ค#R2
 ```
 
-### ⚠️ Rules
-
+### ⚠️ Rules ในการตั้งค่าไฟล์โฮสต์:
 - `Feed [number]` = เริ่มกลุ่มใหม่
-- ทุกอุปกรณ์หลัง Feed จะอยู่ในกลุ่มเดียวกัน
-- ใช้ `Space` แยก IP และชื่อ
-- ใช้ `#` ระบุอุปกรณ์ (IPA, IPB, R1, R2)
-- ข้อความก่อน `#` = ชื่อสนาม
+- ทุกอุปกรณ์หลังคำว่า Feed จะอยู่ในกลุ่มเดียวกันทั้งหมด
+- ใช้ช่องว่าง `Space` ในการแยก IP และชื่อสเตเดียม
+- ใช้เครื่องหมาย `#` ระบุประเภทอุปกรณ์ปลายทาง (เช่น IPA, IPB, R1, R2)
+- ข้อความก่อนเครื่องหมาย `#` จะถูกนำมาใช้เป็นชื่อสนาม
 
 ---
 
 ## 📦 Prerequisites
 
-- Windows 7 / 10 / 11
-- Node.js LTS
-- PowerShell (built-in)
-- PingInfoView (NirSoft)
+- ระบบปฏิบัติการ Windows 7 / 10 / 11
+- Node.js (แนะนำเวอร์ชัน LTS)
+- PowerShell (ติดมากับระบบ Windows อยู่แล้ว)
+- ซอฟต์แวร์ PingInfoView (จากค่าย NirSoft)
 
-ติดตั้ง dependencies:
-
+### การติดตั้ง Dependencies:
 ```bash
 cd C:\<YOUR_PROJECT_PATH>\backend
 npm install socket.io-client
@@ -127,14 +123,14 @@ npm install socket.io-client
 
 ## 🏃‍♂️ How to Run
 
-1. สร้างไฟล์ `ping_agent.bat`
-2. วางโค้ด automation script ลงไป
-3. ดับเบิ้ลคลิกเพื่อเริ่มระบบ
+1. สร้างไฟล์ชื่อ `ping_agent.bat`
+2. นำโค้ด Automation Script ทั้งหมดมาวางลงในไฟล์นี้
+3. ดับเบิ้ลคลิกไฟล์ `ping_agent.bat` เพื่อเริ่มรันระบบ
 
-ระบบจะรันวนลูปตามลำดับ:
+ระบบจะทำงานเป็นลูปวนซ้ำโดยอัตโนมัติตามลำดับ:
 `Step 0` ➡️ `Step 1` ➡️ `Step 2` ➡️ `Step 3` ➡️ `Step 4`
 
-### ✅ Success Message
+### ✅ Success Message เมื่อระบบทำงานสำเร็จ
 ```text
 Cloud Sync Status: Success via WebSockets connection!
 ```
@@ -143,7 +139,7 @@ Cloud Sync Status: Success via WebSockets connection!
 
 ## 📊 JSON Payload Format
 
-ตัวอย่างข้อมูลที่ส่งไป Cloud (ซ่อนไอพีจริงเป็นไอพีจำลอง):
+ตัวอย่างรูปแบบโครงสร้าง JSON ที่ผ่านการประมวลผลแล้วส่งไปยังระบบคลาวด์:
 
 ```json
 [
@@ -168,28 +164,26 @@ Cloud Sync Status: Success via WebSockets connection!
 
 ## ⚠️ Troubleshooting
 
-### ❌ ภาษาไทยเพี้ยน
-* **สาเหตุ:** ไฟล์ไม่ใช่ UTF-16 LE
-* **วิธีแก้:** 
-  1. เปิดไฟล์ด้วย Notepad
-  2. เลือก `Save As` ➡️ ตรงช่อง `Encoding` ให้เปลี่ยนเป็น `UTF-16 LE`
+### ❌ ภาษาไทยเพี้ยน อ่านไม่รู้เรื่อง (Mojibake)
+* **สาเหตุ:** ไฟล์ตั้งค่าหรือไฟล์ผลลัพธ์ไม่ตรงกับฟอร์แมต UTF-16 LE
+* **วิธีแก้:** เปิดไฟล์ดังกล่าวด้วยโปรแกรม Notepad ➡️ เลือก `Save As` ➡️ ตรงหัวข้อ `Encoding` ให้เปลี่ยนเป็น `UTF-16 LE` ก่อนกดบันทึก
 
-### ❌ Cloud Sync Failed / Timeout
-* **สาเหตุ:** อินเทอร์เน็ตหลุด หรือ เซิร์ฟเวอร์บน Render หลับ (Sleep จาก Free tier)
-* **วิธีแก้:** รอประมาณ 50–60 วินาทีเพื่อให้เซิร์ฟเวอร์ตื่น (Wake up) แล้วระบบจะลองใหม่อีกครั้งในรอบถัดไป
+### ❌ Cloud Sync Failed / Connection Timeout
+* **สาเหตุ:** สัญญาณอินเทอร์เน็ตหน้างานขัดข้อง หรือ เซิร์ฟเวอร์บนคลาวด์ฟรี (เช่น Render Free tier) กำลังเข้าสู่โหมดหลับ (Sleep Mode)
+* **วิธีแก้:** รอระบบวนลูปการทำงานรอบใหม่ประมาณ 50–60 วินาที เพื่อรอกระบวนการกระตุ้นให้เซิร์ฟเวอร์ตื่น (Wake up) ระบบจะเชื่อมต่อกลับมาเองโดยอัตโนมัติ
 
-### ❌ หาโฟลเดอร์ไม่เจอ
-* **สาเหตุ:** ระบุ Path ไม่ตรง หรือยังไม่ได้สร้างโฟลเดอร์สำหรับพักไฟล์ข้อมูล
-* **วิธีแก้:** สร้างโฟลเดอร์ `C:\Test` ขึ้นมาใหม่ หรือตรวจสอบตรวจสอบโครงสร้าง Path ภายในตัว `.bat` script อีกครั้ง
+### ❌ ระบบแจ้งว่าหาโฟลเดอร์ไม่เจอ (Path Not Found)
+* **สาเหตุ:** ไม่ได้สร้างโฟลเดอร์สำหรับเก็บไฟล์ล็อก หรือการกำหนด Path ในไฟล์สคริปต์ผิดพลาด
+* **วิธีแก้:** ตรวจสอบและสร้างโฟลเดอร์ `C:\Test` ขึ้นมาใหม่ในระบบ หรือปรับเปลี่ยนตำแหน่งโครงสร้าง Path ภายในตัว `.bat` สคริปต์ให้ตรงตามสเปกเครื่องคอมพิวเตอร์ที่นำไปรันใช้งานจริง
 
 ---
 
 ## 📡 Summary
 
-**TLMA** คือระบบสะพานเชื่อมต่อ (Bridge) ระหว่างเทคโนโลยีต่างๆ ดังนี้:
+**TLMA** ทำหน้าที่เป็นสะพานเชื่อมต่อ (Bridge) ทางเทคโนโลยีระหว่าง:
 * **Desktop Ping Tool** (PingInfoView)
 * **Local Processing** (PowerShell + Batch Script)
 * **Cloud Backend** (Node.js + Socket.io)
 * **Frontend Dashboard** (React)
 
-เพื่อขับเคลื่อนระบบมอนิเตอร์สถานะเครือข่ายของสนามแข่งขันแบบ Real-time อย่างแท้จริง
+เพื่อสร้างสรรค์ระบบที่สามารถขับเคลื่อนและมอนิเตอร์สถานะเครือข่ายของสนามแข่งขันในลีกต่างๆ ได้อย่างมีประสิทธิภาพ แม่นยำ และเป็น Real-time ตลอดการแข่งขัน
