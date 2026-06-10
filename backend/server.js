@@ -93,31 +93,38 @@ app.get('/', (req, res) => {
 // ==========================================
 
 io.on('connection', (socket) => {
-    console.log('Frontend เชื่อมต่อเข้ามาแล้ว:', socket.id);
+    console.log('มีการเชื่อมต่อเข้ามาใหม่:', socket.id);
 
     // 1. ส่งข้อมูลล่าสุดในแรมให้หน้าจอทันทีเมื่อเชื่อมต่อ
     socket.emit('ping-update', globalPingData);
 
-    // 2. [แก้ไขจุดนี้] เปิดลูปอ่านไฟล์เฉพาะตอนรันเทสบนคอมตัวเอง (พอร์ต 3000) เท่านั้น
-    // ถ้าขึ้นคลาวด์ Render (ซึ่งมักจะเป็นพอร์ต 10000) จะไม่รันลูปนี้เพื่อป้องกันการเขียนข้อมูลทับเป็นค่าว่าง
+    // 2. [เปิดรับจากคอมพิวเตอร์] ท่อพิเศษรับข้อมูลตรงผ่าน WebSocket ของคอมคุณ
+    socket.on('client-ping-sync', (data) => {
+        if (Array.isArray(data)) {
+            globalPingData = data;
+            // สะท้อนยิงต่อออกไปหาหน้าเว็บ Vercel ทุกเครื่องทันทีแบบ Real-time
+            io.emit('ping-update', globalPingData);
+            console.log(`[Socket Sync] ซิงค์ข้อมูลสดสำเร็จจำนวน ${data.length} รายการ จากคอมพิวเตอร์`);
+        }
+    });
+
+    // โหมดอ่านไฟล์เครื่องตัวเอง (รันเทสเฉพาะบน localhost)
     let intervalId = null;
     if (process.env.PORT === undefined || process.env.PORT == "3000") {
-        console.log("[Local Mode] เปิดระบบลูปอ่านไฟล์ CSV ในเครื่องทุกๆ 2 วินาที");
         intervalId = setInterval(() => {
             const updatedData = parsePingCSV();
             if (updatedData && updatedData.length > 0) {
                 socket.emit('ping-update', updatedData);
             }
         }, 2000);
-    } else {
-        console.log("[Cloud Mode] สแตนด์บายรับข้อมูลสดจากสคริปต์คอมพิวเตอร์ผ่าน API");
     }
 
     socket.on('disconnect', () => {
         if (intervalId) clearInterval(intervalId);
-        console.log('Frontend ตัดการเชื่อมต่อ');
+        console.log('ตัดการเชื่อมต่อ');
     });
 });
+
 
 
 const PORT = process.env.PORT || 3000;
