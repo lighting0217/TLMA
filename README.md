@@ -42,59 +42,44 @@ TLMA (Total League Monitor Agent) คือระบบ **Local Agent สำห�
 
 ---
 
-## 🏗️ System Architecture
+## 🧱 System Architecture
 
+ระบบทำงานร่วมกันเป็นขั้นตอน (Data Pipeline) จาก Local Machine ส่งตรงไปยัง Cloud Backend ดังนี้:
 
-Local Hosts File (UTF-16 LE)
-│
-▼
-Step 0: PowerShell Pre-process
-→ hosts_generated.txt
-│
-▼
-Step 1: PingInfoView.exe
-→ raw_ping.txt
-│
-▼
-Step 2–3: PowerShell Parser
-→ payload.json (UTF-8)
-│
-▼
-Step 4: Node.js Socket Client
-│
-▼
-Cloud Backend (Render)
-https://tlma.onrender.com
-│
-▼
-React Frontend Dashboard
-→ Real-time Status Update (ONLINE / TIMEOUT)
-
+* **Input:** `Local Hosts File (UTF-16 LE)` 
+* **Step 0:** PowerShell Pre-process ➡️ นำข้อมูลออกเป็นไฟล์ `hosts_generated.txt`
+* **Step 1:** โปรแกรม PingInfoView.exe ประมวลผล ➡️ บันทึกผลลัพธ์ลง `raw_ping.txt`
+* **Step 2-3:** PowerShell Parser ➡️ แปลงไฟล์และจัดรูปแบบข้อมูลให้อยู่ในรูป `payload.json (UTF-8)`
+* **Step 4:** Node.js Socket Client ➡️ ส่งข้อมูลแบบ Real-time ผ่าน WebSockets ไปยังเซิร์ฟเวอร์
+* **Cloud Backend:** ประมวลผลบนระบบ Render ([https://tlma.onrender.com](https://tlma.onrender.com))
+* **Output:** React Frontend Dashboard ➡️ แสดงผลอัปเดตสถานะแบบ Real-time (`ONLINE` / `TIMEOUT`)
 
 ---
 
 ## 📁 Directory Structure
 
+โครงสร้างไดเรกทอรีและการจัดเก็บไฟล์ภายในระบบ:
 
-C:
-├── Test
-│ ├── hosts_generated.txt
-│ ├── raw_ping.txt
-│ └── payload.json
-│
-├── Users\Wuttikorn
-│ └── Downloads\Compressed\pinginfoview-x64-v3.25
-│ ├── PingInfoView.exe
-│ └── PingInfoView_hosts.txt
-│
-├── Documents\TLF\backend
-│ └── node_modules
-│ └── socket.io-client
-│
-└── ping_agent.bat
+```text
+C:\
+└── Test\
+    ├── hosts_generated.txt
+    ├── raw_ping.txt
+    └── payload.json
+    
+C:\Users\Wuttikorn\
+└── Downloads\
+    └── Compressed\
+        └── pinginfoview-x64-v3.25\
+            ├── PingInfoView.exe
+            └── PingInfoView_hosts.txt
 
+C:\Documents\TLF\backend\
+└── node_modules\
+    └── socket.io-client\
+        └── ping_agent.bat
+```
 
----
 
 ## 📝 Hosts Configuration Guide
 
