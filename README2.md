@@ -1,10 +1,10 @@
 # 📡 TLMA — Real-time Network Ping Monitor
 ### (PingInfoView to React Cloud Agent)
 
-![Project Status](https://shields.io)
-![Environment](https://shields.io)
-![Backend](https://shields.io)
-![Frontend](https://shields.io)
+![Project Status](https://img.shields.io/badge/status-active-success)
+![Environment](https://img.shields.io/badge/environment-Windows%20%7C%20PowerShell-blue)
+![Backend](https://img.shields.io/badge/backend-Node.js%20%7C%20Socket.io-green)
+![Frontend](https://img.shields.io/badge/frontend-React-informational)
 
 **TLMA** คือระบบ **Local Agent สำหรับมอนิเตอร์สถานะเครือข่ายแบบ Real-time** ที่ออกแบบมาเพื่อเชื่อมโยงการทำงานระหว่างซอฟต์แวร์เดสก์ท็อปอย่าง **NirSoft PingInfoView** เข้ากับระบบคลาวด์แอปพลิเคชัน (React + Node.js) 
 
