@@ -32,12 +32,35 @@ export default function PingMonitor() {
         // นำข้อมูลที่จัดฟอร์แมตแล้วไปอัปเดตสถานะและแจ้งเตือน Alert
         normalizedNodes.forEach(node => {
             updateStats(node);
-            if (prevStatus.current[node.ip] === "ONLINE" && node.status === "TIMEOUT") {
-                addEvent(node);
-                if (Notification.permission === "granted") {
-                    new Notification(`Alert: ${node.name} is DOWN!`, { body: `IP: ${node.ip}` });
-                }
-            }
+            
+            // 🚨 จังหวะที่สถานะเปลี่ยนจาก ONLINE เป็น TIMEOUT (สัญญาณล่ม)
+// 🚨 จังหวะที่สถานะเปลี่ยนจาก ONLINE เป็น TIMEOUT (สัญญาณล่ม)
+if (prevStatus.current[node.ip] === "ONLINE" && node.status === "TIMEOUT") {
+    
+    // 🔥 ส่ง node ตัวเดิมที่มีข้อมูลดิบครบๆ เข้าไปตรงๆ เลย ไม่ต้องเอามาต่อสตริงเองแล้ว!
+    addEvent(node);
+
+    // 🔔 ถอด Logic มาจัดการสำหรับ Notification มุมขวาล่างให้สวยงามล้อไปกับระบบ
+    let groupText = node.group.replace(/^[-\s]+/, "").trim(); 
+    let feed = "XX";
+    let stadium = groupText;
+
+    const feedMatch = groupText.match(/feed\s*(\d+)/i);
+    if (feedMatch) {
+        feed = feedMatch[1]; 
+        stadium = groupText.replace(/feed\s*\d+/i, "").replace(/^[-\s]+/, "").trim(); 
+    }
+
+    if (stadium && stadium !== "ทั่วไป" && !stadium.startsWith("สนาม")) {
+        stadium = "สนาม" + stadium;
+    }
+
+    if (Notification.permission === "granted") {
+        new Notification(`🏟️ Feed ${feed} ${stadium} Down!`, { 
+            body: `🔴 Device: ${node.name} | IP: ${node.ip}`
+        });
+    }
+}
             prevStatus.current[node.ip] = node.status;
         });
 
@@ -73,24 +96,19 @@ export default function PingMonitor() {
         } catch (error) { console.error("Error fetching CSV:", error); }
     };
 
-    // 🔄 ยุบรวมการเชื่อมต่อ Socket ไว้ใน useEffect ชุดเดียวอย่างถูกต้อง
     useEffect(() => {
         if (Notification.permission !== "granted") Notification.requestPermission();
         
-        // รันดึงข้อมูลจาก CSV ท้องถิ่นเผื่อไว้รอบแรกก่อน
         fetchPingDataFromCSV();
 
-        // เริ่มต้นการเชื่อมต่อ Socket ไปที่ Backend บน Render
         const socket = io("https://tlma.onrender.com", { transports: ["websocket"] });
         
-        // ⚡ ฟังท่อหลัก "ping-update" เพื่อรับข้อมูลสดๆ หรือข้อมูล Initial Load จาก Backend ทันที
         socket.on("ping-update", (data) => {
             if (data && Array.isArray(data)) {
                 processIncomingNodes(data);
             }
         });
 
-        // คืนค่าฟังก์ชันเพื่อทำความสะอาด Connection ตอนปิดหน้าจอ
         return () => { 
             socket.off("ping-update");
             socket.disconnect(); 

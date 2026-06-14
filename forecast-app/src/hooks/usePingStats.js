@@ -12,10 +12,23 @@ export const usePingStats = () => {
         }));
     };
 
-    const addEvent = (node) => {
-        const newEvent = { time: new Date().toLocaleTimeString(), device: node.name, ip: node.ip, status: node.status };
-        setEvents(prev => [newEvent, ...prev].slice(0, 50)); // เก็บ 50 เหตุการณ์ล่าสุด
+const addEvent = (node) => {
+    // 📥 1. Checkpoint ดูขาเข้า: ดูว่ามีชื่อสนามหรือเลข Feed (เช่น group หรือ stadiumName) แนบมาด้วยไหม
+    console.log("📥 [addEvent] ข้อมูลดิบขาเข้า (node):", node);
+
+    const newEvent = { 
+        ...node, 
+        time: new Date().toLocaleTimeString(), 
+        device: node.name, 
+        ip: node.ip, 
+        status: node.status 
     };
+
+    // 📤 2. Checkpoint ดูขาออก: ดูว่า Object ที่ประกอบร่างเสร็จแล้ว มีโครงสร้างครบถ้วนพร้อมส่งต่อให้ HistoryLog หรือไม่
+    console.log("📤 [addEvent] ข้อมูลที่แปลงเสร็จแล้วขาออก (newEvent):", newEvent);
+
+    setEvents(prev => [newEvent, ...prev].slice(0, 50)); 
+};
 
     return { history, events, updateStats, addEvent };
 };
