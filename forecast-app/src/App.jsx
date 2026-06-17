@@ -96,7 +96,7 @@ export default function App() {
           <button type="submit" style={{
             width: "100%", padding: "12px", backgroundColor: theme.accent, 
             color: "#020617", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: 800, fontSize: "0.9rem", transition: "0.2s"
-          }}>Unlock Dashboard</button>
+          }}>จิ้มเบาๆนะเตงงง</button>
         </form>
       </div>
     );
