@@ -30,21 +30,40 @@ export default function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันซ่อนรหัส)
+  // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันดึงจากไฟล์แยก .env.local ปลอดภัย 100%)
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // ดึงค่าจากตัวแปร Env ของ Vite (หากไม่มีให้ใช้ค่า Default ด้านหลัง)
-    const allowedUser = import.meta.env.VITE_AUTH_USER || "admin";
-    const allowedPass = import.meta.env.VITE_AUTH_PASSWORD || "astar217";
+    // ดึงค่าจากไฟล์ .env.local (หรือดึงจาก Vercel Environment Variables ตอนขึ้นโปรดักชัน)
+    const envUsersString = import.meta.env.VITE_ALLOWED_USERS;
     
-    if (username === allowedUser && password === allowedPass) {
-      sessionStorage.setItem("is_authed", "true");
-      setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Username หรือ Password ไม่ถูกต้อง");
+    // หากลืมตั้งค่าตัวแปร ระบบจะแจ้งเตือนเพื่อความปลอดภัย
+    if (!envUsersString) {
+      console.error("Error: ไม่พบการตั้งค่า VITE_ALLOWED_USERS ในระบบ");
+      setError("ระบบยังไม่พร้อมใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ");
+      return;
+    }
+
+    try {
+      const allowedUsers = JSON.parse(envUsersString);
+      
+      const userMatched = allowedUsers.find(
+        (account) => account.user === username && account.pass === password
+      );
+
+      if (userMatched) {
+        sessionStorage.setItem("is_authed", "true");
+        setIsAuthenticated(true);
+        setError("");
+      } else {
+        setError("Username หรือ Password ไม่ถูกต้อง");
+      }
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาดในการอ่านข้อมูลผู้ใช้งาน:", err);
+      setError("ระบบตรวจสอบสิทธิ์มีปัญหา กรุณากรอกโครงสร้าง JSON ให้ถูกต้อง");
     }
   };
+
 
 
   // ── 1. กรณีที่ยังไม่ได้ล็อกอิน: บล็อกหน้าจอทั้งหมด ──

@@ -15,3 +15,5 @@ npm-debug.log*
 
 # Ignore local test config
 vitest.config.js
+
+.env.local
