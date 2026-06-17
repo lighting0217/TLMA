@@ -28,8 +28,6 @@ export default function PingMonitor() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [lastUpdated, setLastUpdated] = useState("");
-  const [loadError, setLoadError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const prevStatus = useRef({});
   const allNodesRef = useRef({});
 
@@ -65,60 +63,7 @@ export default function PingMonitor() {
     [updateStats, addEvent]
   );
 
-  const fetchPingDataFromCSV = useCallback(async () => {
-    setLoadError("");
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `/ping_result.csv?t=${new Date().getTime()}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const text = await response.text();
-      const blocks = text
-        .split(/={30,}/)
-        .filter((b) => b.trim() !== "");
-
-      const parsedNodes = blocks.map((block) => {
-        const getValue = (key) => {
-          const line = block
-            .split("\n")
-            .find((l) => l.trim().startsWith(key));
-          return line ? line.split(":")[1].trim() : "";
-        };
-
-        const desc = getValue("Description");
-        const ip = getValue("IP Address");
-        const isSuccessful = getValue("Last Ping Status") === "Succeeded";
-        const ping = getValue("Last Ping Time") || "-";
-
-        return {
-          name: desc,
-          ip,
-          status: isSuccessful ? "ONLINE" : "TIMEOUT",
-          ping,
-        };
-      });
-
-      if (parsedNodes.length > 0) {
-        processIncomingNodes(parsedNodes);
-      }
-    } catch (error) {
-      console.error("Error fetching CSV:", error);
-      setLoadError("Unable to load initial ping data. Refresh to retry.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [processIncomingNodes]);
-
   const { isConnected } = useWebSocketPing(processIncomingNodes);
-
-  useEffect(() => {
-    fetchPingDataFromCSV();
-  }, [fetchPingDataFromCSV]);
 
   const filteredGroupedNodes = useMemo(() => {
     const groupedBySearch = filterNodesBySearchTerm(groupedNodes, searchTerm);
@@ -222,9 +167,6 @@ export default function PingMonitor() {
           ))}
         </div>
       </div>
-
-      {loadError && <div className="error-banner">{loadError}</div>}
-      {isLoading && <div className="loading-banner">Loading initial ping data…</div>}
 
       <div className="ping-monitor-cards">
         {Object.entries(filteredGroupedNodes).length === 0 ? (
