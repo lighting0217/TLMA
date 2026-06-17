@@ -6,8 +6,9 @@
  * - Uses compression-friendly data format
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import io from "socket.io-client";
+import { SOCKET_URL } from "../config";
 
 const SOCKET_CONFIG = {
   transports: ["websocket"], // Avoid http long-polling (uses more bandwidth)
@@ -24,10 +25,10 @@ export const useWebSocketPing = (onDataReceived) => {
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
 
-    socketRef.current = io("https://tlma.onrender.com", SOCKET_CONFIG);
+    socketRef.current = io(SOCKET_URL, SOCKET_CONFIG);
 
     socketRef.current.on("connect", () => {
-      console.log("✅ WebSocket connected");
+      console.log("✅ WebSocket connected to", SOCKET_URL);
       isConnectedRef.current = true;
       // Request initial state once after connection
       socketRef.current.emit("request-full-sync");
