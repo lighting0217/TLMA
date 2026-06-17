@@ -64,8 +64,6 @@ export default function App() {
     }
   };
 
-
-
   // ── 1. กรณีที่ยังไม่ได้ล็อกอิน: บล็อกหน้าจอทั้งหมด ──
   if (!isAuthenticated) {
     return (
@@ -78,17 +76,17 @@ export default function App() {
           borderRadius: "12px", border: theme.border, width: "320px", boxSizing: "border-box"
         }}>
           <h2 style={{ textAlign: "center", marginBottom: "24px", color: theme.accent, fontSize: "1.25rem", fontWeight: 800 }}>
-            🔒 SECURITY ACCESS
+            🔒 จ๊ะเอ๋ ใครเอ่ย
           </h2>
           
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>Username</label>
+            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>ชื่ออะไรจ๊ะะ</label>
             <input type="text" value={username} onChange={e => setUsername(e.target.value)} 
               style={{ width: "100%", padding: "10px", borderRadius: "6px", border: theme.border, backgroundColor: "rgba(0,0,0,0.2)", color: theme.textMain, outline: "none", boxSizing: "border-box" }} required />
           </div>
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>Password</label>
+            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>มีรหัสป่าววว</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} 
               style={{ width: "100%", padding: "10px", borderRadius: "6px", border: theme.border, backgroundColor: "rgba(0,0,0,0.2)", color: theme.textMain, outline: "none", boxSizing: "border-box" }} required />
           </div>
