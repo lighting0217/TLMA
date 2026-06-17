@@ -1,0 +1,14 @@
+{
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1",
+      "authentication": {
+        "type": "basic",
+        "username": "$BASIC_AUTH_USER",
+        "password": "$BASIC_AUTH_PASSWORD"
+      }
+    }
+  ]
+}
