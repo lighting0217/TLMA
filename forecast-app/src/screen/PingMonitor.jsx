@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+﻿import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import PingCard from "../components/PingCard";
 import { usePingStats } from "../hooks/usePingStats";
 import HistoryLog from "../components/HistoryLog";
@@ -16,181 +16,175 @@ import {
   sendDowntimeNotification,
 } from "../utils/notifications";
 
+const STATUS_OPTIONS = [
+  { value: "ALL", label: "All" },
+  { value: "ONLINE", label: "Online" },
+  { value: "TIMEOUT", label: "Timeout" },
+];
+
 export default function PingMonitor() {
   const { history, events, updateStats, addEvent } = usePingStats();
   const [groupedNodes, setGroupedNodes] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [lastUpdated, setLastUpdated] = useState("");
   const prevStatus = useRef({});
   const allNodesRef = useRef({});
 
-  // Request notification permission on mount
   useEffect(() => {
     requestNotificationPermission();
   }, []);
 
-  // Core data processing pipeline
-  const processIncomingNodes = useCallback((parsedNodes) => {
-    // Step 1: Normalize all nodes to consistent format
-    const normalizedNodes = parsedNodes
-      .map(normalizeNode)
-      .filter((node) => node !== null);
+  const processIncomingNodes = useCallback(
+    (parsedNodes) => {
+      const normalizedNodes = parsedNodes
+        .map(normalizeNode)
+        .filter((node) => node !== null);
 
-    if (normalizedNodes.length === 0) return;
+      if (normalizedNodes.length === 0) return;
 
-    // Step 2: Process each node - update stats and check for alerts
-    normalizedNodes.forEach((node) => {
-      // Update stats in usePingStats hook
-      updateStats(node);
+      normalizedNodes.forEach((node) => {
+        updateStats(node);
 
-      // Step 3: Detect status changes and trigger alerts
-      const { isDowntime } = detectStatusChange(prevStatus.current, node);
+        const { isDowntime } = detectStatusChange(prevStatus.current, node);
+        if (isDowntime) {
+          addEvent(node);
+          sendDowntimeNotification(node);
+        }
 
-      if (isDowntime) {
-        addEvent(node);
-        sendDowntimeNotification(node);
-      }
-
-      // Update tracking reference
-      updatePrevStatusRef(prevStatus, node);
-
-      // Cache node for cleanup
-      allNodesRef.current[node.ip] = node;
-    });
-
-    // Clean up stale entries to prevent memory bloat
-    const allIPs = Object.keys(allNodesRef.current);
-    cleanupOldStatusEntries(prevStatus, allIPs);
-
-    // Step 4: Group nodes by stadium
-    const grouped = groupNodesByStadium(normalizedNodes);
-    setGroupedNodes(grouped);
-  }, [updateStats, addEvent]);
-
-  // Fetch initial data from CSV file
-  const fetchPingDataFromCSV = useCallback(async () => {
-    try {
-      // Add cache-busting query param
-      const response = await fetch(
-        `/ping_result.csv?t=${new Date().getTime()}`
-      );
-      if (!response.ok) return;
-
-      const text = await response.text();
-      const blocks = text
-        .split(/={30,}/)
-        .filter((b) => b.trim() !== "");
-
-      const parsedNodes = blocks.map((block) => {
-        const getValue = (key) => {
-          const line = block
-            .split("\n")
-            .find((l) => l.trim().startsWith(key));
-          return line ? line.split(":")[1].trim() : "";
-        };
-
-        const desc = getValue("Description");
-        const ip = getValue("IP Address");
-        const isSuccessful =
-          getValue("Last Ping Status") === "Succeeded";
-        const ping = getValue("Last Ping Time") || "-";
-
-        return {
-          name: desc,
-          ip,
-          status: isSuccessful ? "ONLINE" : "TIMEOUT",
-          ping,
-        };
+        updatePrevStatusRef(prevStatus, node);
+        allNodesRef.current[node.ip] = node;
       });
 
-      if (parsedNodes.length > 0) {
-        processIncomingNodes(parsedNodes);
-      }
-    } catch (error) {
-      console.error("Error fetching CSV:", error);
-    }
-  }, [processIncomingNodes]);
-
-  // Initialize WebSocket connection
-  useWebSocketPing(processIncomingNodes);
-
-  // Fetch initial CSV data on component mount
-  // Fetch initial CSV data on component mount
-   
-  useEffect(() => {
-    fetchPingDataFromCSV();
-  }, [fetchPingDataFromCSV]);
-
-  // Memoize filtered nodes to prevent unnecessary re-renders
-  const filteredGroupedNodes = useMemo(() => {
-    return filterNodesBySearchTerm(groupedNodes, searchTerm);
-  }, [groupedNodes, searchTerm]);
-
-  // Memoize search handler
-  const handleSearchChange = useCallback(
-    (e) => setSearchTerm(e.target.value),
-    []
+      cleanupOldStatusEntries(prevStatus, Object.keys(allNodesRef.current));
+      setGroupedNodes(groupNodesByStadium(normalizedNodes));
+      setLastUpdated(new Date().toLocaleTimeString());
+    },
+    [updateStats, addEvent]
   );
 
-  const handleSearchFocus = useCallback((e) => {
-    e.target.style.borderColor = "var(--accent)";
-  }, []);
+  const { isConnected } = useWebSocketPing(processIncomingNodes);
 
-  const handleSearchBlur = useCallback((e) => {
-    e.target.style.borderColor = "var(--border)";
-  }, []);
+  const filteredGroupedNodes = useMemo(() => {
+    const groupedBySearch = filterNodesBySearchTerm(groupedNodes, searchTerm);
+    if (statusFilter === "ALL") return groupedBySearch;
+
+    return Object.entries(groupedBySearch).reduce((acc, [stadium, devices]) => {
+      const filtered = devices.filter((device) => device.status === statusFilter);
+      if (filtered.length > 0) acc[stadium] = filtered;
+      return acc;
+    }, {});
+  }, [groupedNodes, searchTerm, statusFilter]);
+
+  const stats = useMemo(() => {
+    const nodes = Object.values(groupedNodes).flat();
+    const total = nodes.length;
+    const online = nodes.filter((node) => node.status === "ONLINE").length;
+    const timeout = total - online;
+
+    return {
+      total,
+      online,
+      timeout,
+      groups: Object.keys(groupedNodes).length,
+    };
+  }, [groupedNodes]);
+
+  const handleSearchChange = useCallback((e) => setSearchTerm(e.target.value), []);
+  const handleClearSearch = useCallback(() => setSearchTerm(""), []);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        padding: "4px",
-      }}
-    >
-      {/* 🔍 Search Bar */}
-      <input
-        value={searchTerm}
-        onChange={handleSearchChange}
-        onFocus={handleSearchFocus}
-        onBlur={handleSearchBlur}
-        placeholder="🔍 ค้นหาสนาม, ชื่ออุปกรณ์ หรือ IP Address..."
-        style={{
-          width: "100%",
-          padding: "14px 20px",
-          borderRadius: "12px",
-          border: "1px solid var(--border)",
-          background: "rgba(15, 23, 42, 0.6)",
-          backdropFilter: "blur(8px)",
-          color: "var(--text-h)",
-          fontSize: "14px",
-          outline: "none",
-          boxSizing: "border-box",
-          transition: "all 0.3s ease",
-        }}
-      />
+    <div className="ping-monitor-root">
+      <div className="ping-monitor-header">
+        <div className="ping-monitor-heading">
+          <h2>Network Ping Dashboard</h2>
+          <p>Live overview of device health, outages, and search filters.</p>
+        </div>
 
-      {/* 📊 Cards grouped by stadium */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "14px",
-          width: "100%",
-        }}
-      >
-        {Object.entries(filteredGroupedNodes).map(([name, devs]) => (
-          <PingCard
-            key={name}
-            stadiumName={name}
-            devices={devs}
-            history={history}
-          />
-        ))}
+        <div className="ping-monitor-badges">
+          <span
+            className={`status-badge ${
+              isConnected ? "status-online" : "status-offline"
+            }`}
+          >
+            {isConnected ? "Connected" : "Disconnected"}
+          </span>
+          <span className="status-info">
+            Last update: {lastUpdated || "waiting..."}
+          </span>
+        </div>
       </div>
 
-      {/* 📋 Event History */}
+      <div className="ping-monitor-summary">
+        <div className="ping-monitor-stat-card">
+          <strong>{stats.total}</strong>
+          <span>Total devices</span>
+        </div>
+        <div className="ping-monitor-stat-card">
+          <strong>{stats.online}</strong>
+          <span>Online devices</span>
+        </div>
+        <div className="ping-monitor-stat-card">
+          <strong>{stats.timeout}</strong>
+          <span>Timeout devices</span>
+        </div>
+        <div className="ping-monitor-stat-card">
+          <strong>{stats.groups}</strong>
+          <span>Stadium groups</span>
+        </div>
+      </div>
+
+      <div className="ping-monitor-controls">
+        <div className="search-wrapper">
+          <input
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="🔍 ค้นหาสนาม, ชื่ออุปกรณ์ หรือ IP Address..."
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              className="clear-button"
+              onClick={handleClearSearch}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="filter-group">
+          {STATUS_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={`filter-option ${
+                statusFilter === option.value ? "active" : ""
+              }`}
+              onClick={() => setStatusFilter(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="ping-monitor-cards">
+        {Object.entries(filteredGroupedNodes).length === 0 ? (
+          <div className="empty-state">
+            ไม่มีอุปกรณ์ที่ตรงกับตัวกรองหรือคำค้นหา ปรับฟิลเตอร์หรือค้นหาอีกครั้ง.
+          </div>
+        ) : (
+          Object.entries(filteredGroupedNodes).map(([name, devs]) => (
+            <PingCard
+              key={name}
+              stadiumName={name}
+              devices={devs}
+              history={history}
+            />
+          ))
+        )}
+      </div>
+
       <HistoryLog events={events} />
     </div>
   );

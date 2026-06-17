@@ -6,7 +6,7 @@
  * - Uses compression-friendly data format
  */
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
 import { SOCKET_URL } from "../config";
 
@@ -21,6 +21,12 @@ const SOCKET_CONFIG = {
 export const useWebSocketPing = (onDataReceived) => {
   const socketRef = useRef(null);
   const isConnectedRef = useRef(false);
+  const onDataReceivedRef = useRef(onDataReceived);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    onDataReceivedRef.current = onDataReceived;
+  }, [onDataReceived]);
 
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
@@ -30,26 +36,26 @@ export const useWebSocketPing = (onDataReceived) => {
     socketRef.current.on("connect", () => {
       console.log("✅ WebSocket connected to", SOCKET_URL);
       isConnectedRef.current = true;
-      // Request initial state once after connection
+      setIsConnected(true);
       socketRef.current.emit("request-full-sync");
     });
 
     socketRef.current.on("disconnect", () => {
       console.log("❌ WebSocket disconnected");
       isConnectedRef.current = false;
+      setIsConnected(false);
     });
 
-    // Listen for delta updates (only changed data)
     socketRef.current.on("ping-update", (data) => {
       if (data && Array.isArray(data)) {
-        onDataReceived(data);
+        onDataReceivedRef.current(data);
       }
     });
 
     socketRef.current.on("error", (error) => {
       console.error("WebSocket error:", error);
     });
-  }, [onDataReceived]);
+  }, []);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
@@ -60,10 +66,9 @@ export const useWebSocketPing = (onDataReceived) => {
       socketRef.current.disconnect();
       socketRef.current = null;
       isConnectedRef.current = false;
+      setIsConnected(false);
     }
   }, []);
-
-  const isConnected = useCallback(() => isConnectedRef.current, []);
 
   useEffect(() => {
     connect();

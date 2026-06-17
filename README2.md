@@ -72,7 +72,7 @@ C:\<YOUR_PROJECT_PATH>\backend\
 
 ตำแหน่งไฟล์คอนฟิกสำหรับใช้กับระบบมอนิเตอร์:
 ```text
-C:\Users\<YOUR_WINDOWS_USERNAME>\Downloads\pinginfoview-x64-vX.XX\PingInfoView_hosts.txt
+C:\Users\Wuttikorn\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt
 ```
 
 ### 🔸 ตัวอย่างรูปแบบการตั้งค่า (Example Format)
