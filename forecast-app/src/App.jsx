@@ -29,12 +29,15 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState("ss27");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // ฟังก์ชันตรวจรหัสผ่าน
+  // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันซ่อนรหัส)
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // ตั้งค่า Username และ Password ที่คุณต้องการตรงนี้
-    if (username === "admin" && password === "astar217") {
+    // ดึงค่าจากตัวแปร Env ของ Vite (หากไม่มีให้ใช้ค่า Default ด้านหลัง)
+    const allowedUser = import.meta.env.VITE_AUTH_USER || "admin";
+    const allowedPass = import.meta.env.VITE_AUTH_PASSWORD || "astar217";
+    
+    if (username === allowedUser && password === allowedPass) {
       sessionStorage.setItem("is_authed", "true");
       setIsAuthenticated(true);
       setError("");
@@ -42,6 +45,7 @@ export default function App() {
       setError("Username หรือ Password ไม่ถูกต้อง");
     }
   };
+
 
   // ── 1. กรณีที่ยังไม่ได้ล็อกอิน: บล็อกหน้าจอทั้งหมด ──
   if (!isAuthenticated) {
