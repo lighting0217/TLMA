@@ -114,6 +114,8 @@ export default function PingMonitor() {
   useWebSocketPing(processIncomingNodes);
 
   // Fetch initial CSV data on component mount
+  // Fetch initial CSV data on component mount
+   
   useEffect(() => {
     fetchPingDataFromCSV();
   }, [fetchPingDataFromCSV]);

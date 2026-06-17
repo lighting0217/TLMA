@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.env
+.vite/
+.cache/
+coverage/
+coverage-html/
+*.log
+.DS_Store
+.idea/
+.vscode/
+package-lock.json
+npm-debug.log*
+
+# Ignore local test config
+vitest.config.js

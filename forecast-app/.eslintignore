@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+src/Backup/
+public/
+vitest.config.js
+REFACTORING_GUIDE.md
+ARCHITECTURE_DECISIONS.md

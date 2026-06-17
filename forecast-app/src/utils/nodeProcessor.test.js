@@ -3,12 +3,14 @@
  * Example test cases - adapt to your testing framework (Jest, Vitest, etc.)
  */
 
+/* global describe,it,expect */
+
 import {
   normalizeNode,
   groupNodesByStadium,
   filterNodesBySearchTerm,
   detectStatusChange,
-} from "../nodeProcessor";
+} from "./nodeProcessor";
 
 describe("nodeProcessor", () => {
   describe("normalizeNode", () => {
