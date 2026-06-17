@@ -6,7 +6,7 @@
  * - Uses compression-friendly data format
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import io from "socket.io-client";
 import { SOCKET_URL } from "../config";
 
