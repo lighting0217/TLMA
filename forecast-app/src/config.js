@@ -4,3 +4,7 @@ export const CONFIG = {
     MAX_LOG_ENTRIES: 50,        // เก็บ Log ย้อนหลัง 50 รายการ
     TIMEOUT_THRESHOLD: "TIMEOUT" // สถานะที่ถือว่าล่ม
 };
+
+const DEFAULT_SOCKET_URL = "https://tlma.onrender.com";
+
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || DEFAULT_SOCKET_URL;

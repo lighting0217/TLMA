@@ -80,7 +80,7 @@ C:\<YOUR_PROJECT_PATH>\backend\
 
 ไฟล์คอนฟิกสำหรับใช้กับระบบมอนิเตอร์:
 ```text
-C:\Users\<YOUR_WINDOWS_USERNAME>\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt
+C:\Users\Wuttikorn\Downloads\Compressed\pinginfoview-x64-v3.25\PingInfoView_hosts.txt
 ```
 
 ### 🔸 Format ตัวอย่าง (Example Format)
