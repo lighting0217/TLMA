@@ -185,7 +185,7 @@ export default function Ss26({ theme }) {
             AWN/AIS Play · Thai League · IBC
           </div>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 900, margin: 0, letterSpacing: "-0.03em", background: `linear-gradient(to right, ${theme?.leagueTL1 || '#f31717'}, ${theme?.leagueTL2 || '#574de7'}, ${theme?.leagueTL3 || '#4ac710'})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            📅 Thai League Calendar 2026/2027
+            📅 Thai League Calendar 2025/2026
           </h1>
         </div>
 
