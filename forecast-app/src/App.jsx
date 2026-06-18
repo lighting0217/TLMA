@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState,  } from "react";
 import Ss26 from "./screen/ss26";
 import Ss27 from "./screen/ss27";
 import PingMonitor from "./screen/PingMonitor";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import Stdl from "./screen/Stdl";
+
+// 🔌 นำเข้า Telemetry Hook มาดึงค่าสถิติไปโชว์ที่ Sidebar Globally
+import { useFrontendTelemetry } from "./hooks/useFrontendTelemetry";
 
 const theme = {
   bg: "#020617",
@@ -29,15 +33,15 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState("ss27");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันซ่อนรหัส)
+  // 📊 เรียกใช้ข้อมูล Telemetry (ตัว Hook จะดึงสถานะล่าสุดมาอัปเดตให้อัตโนมัติ)
+  const { telemetry } = useFrontendTelemetry();
+
   // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันดึงจากไฟล์แยก .env.local ปลอดภัย 100%)
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // ดึงค่าจากไฟล์ .env.local (หรือดึงจาก Vercel Environment Variables ตอนขึ้นโปรดักชัน)
     const envUsersString = import.meta.env.VITE_ALLOWED_USERS;
     
-    // หากลืมตั้งค่าตัวแปร ระบบจะแจ้งเตือนเพื่อความปลอดภัย
     if (!envUsersString) {
       console.error("Error: ไม่พบการตั้งค่า VITE_ALLOWED_USERS ในระบบ");
       setError("ระบบยังไม่พร้อมใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ");
@@ -136,9 +140,42 @@ export default function App() {
             <span style={{ fontSize: "1.1rem" }}>⚡</span>
             {!isCollapsed && <span>Network Ping</span>}
           </button>
+          <button onClick={() => setCurrentScreen("stdl")} style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: "12px", padding: "12px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, width: "100%", transition: "0.2s", backgroundColor: currentScreen === "stdl" ? "rgba(56, 189, 248, 0.1)" : "transparent", color: currentScreen === "stdl" ? theme.accent : theme.textMuted }}>
+            <span style={{ fontSize: "1.1rem" }}>🏟️</span>
+            {!isCollapsed && <span>Stadium IP Lookup</span>}
+          </button>          
         </nav>
 
-        {!isCollapsed && <div style={{ fontSize: "0.65rem", color: theme.textMuted, textAlign: "center", padding: "8px 0" }}>Thai League Live Feed v2.0</div>}
+        {/* ── 📊 SIDEBAR FOOTER: เติมชุดวัดปริมาณ Data Telemetry ตรงนี้ ── */}
+        <div style={{ 
+          marginTop: "auto", 
+          borderTop: theme.border, 
+          paddingTop: "12px", 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: "4px",
+          textAlign: isCollapsed ? "center" : "left" 
+        }}>
+          {!isCollapsed ? (
+            <>
+              <div style={{ fontSize: "0.75rem", color: theme.textMain, fontWeight: "600", display: "flex", justifyContent: "space-between" }}>
+                <span>📡 Live Traffic:</span>
+                <span style={{ color: theme.accent }}>{telemetry.total.mb} MB</span>
+              </div>
+              <div style={{ fontSize: "0.65rem", color: theme.textMuted, display: "flex", justifyContent: "space-between" }}>
+                <span>Speed/min:</span>
+                <span>{telemetry.perMinute.kb} KB</span>
+              </div>
+              <div style={{ fontSize: "0.65rem", color: theme.textMuted, textAlign: "center", marginTop: "6px", opacity: 0.7 }}>
+                Thai League Live Feed v2.0
+              </div>
+            </>
+          ) : (
+            <div style={{ fontSize: "0.9rem", title: `Total Traffic: ${telemetry.total.mb} MB` }}>
+              📡
+            </div>
+          )}
+        </div>
       </aside>
 
       {/* ── MAIN CONTENT AREA ── */}
@@ -154,6 +191,7 @@ export default function App() {
         {currentScreen === "ss27" && <Ss27 />}
         {currentScreen === "ss26" && <Ss26 />}
         {currentScreen === "ping" && <PingMonitor />}
+        {currentScreen === "stdl"&& <Stdl />}
       </main>
 
       <Analytics />

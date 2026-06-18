@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import PingCard from "../components/PingCard";
 import { usePingStats } from "../hooks/usePingStats";
 import HistoryLog from "../components/HistoryLog";
 import { useWebSocketPing } from "../hooks/useWebSocketPing";
+import { useFrontendTelemetry } from "../hooks/useFrontendTelemetry";
 import {
   normalizeNode,
   groupNodesByStadium,
@@ -28,8 +29,12 @@ export default function PingMonitor() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [lastUpdated, setLastUpdated] = useState("");
+  
   const prevStatus = useRef({});
   const allNodesRef = useRef({});
+  
+  // ลบ trackFetch ออกเพราะไม่ได้ใช้
+  const { telemetry } = useFrontendTelemetry();
 
   useEffect(() => {
     requestNotificationPermission();
@@ -132,6 +137,38 @@ export default function PingMonitor() {
           <strong>{stats.groups}</strong>
           <span>Stadium groups</span>
         </div>
+      </div>
+
+      {/* 🎯 [TELEMETRY PANEL] เพิ่ม Optional Chaining (?.) ป้องกันเว็บพังตอนเริ่มต้น */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'left', lineHeight: '1.4' }}>
+          📡 <strong>Fetches:</strong> {telemetry?.totalFetches || 0} ครั้ง | 
+          💾 <strong>Total Data:</strong> {telemetry?.total?.mb || 0} MB | 
+          ⚡ <strong>Last File:</strong> {telemetry?.lastFetch?.kb || 0} KB <br/>
+          ⏱️ <strong>Traffic/min:</strong> {telemetry?.perMinute?.kb || 0} KB ({telemetry?.perMinute?.mb || 0} MB)
+        </div>
+        <button 
+          onClick={() => {
+            try {
+              const key = 'tlma_frontend_telemetry';
+              const arr = JSON.parse(localStorage.getItem(key) || '[]');
+              const w = window.open('', '_blank');
+              if (w) {
+                w.document.open();
+                w.document.write(`<pre style="font-family: monospace; padding: 20px;">${JSON.stringify(arr.slice(-50), null, 2)}</pre>`);
+                w.document.close();
+              } else {
+                console.warn('Popup blocked by browser');
+                alert("Please allow pop-ups to view raw logs.");
+              }
+            } catch (e) { 
+              console.warn('Cannot show telemetry', e); 
+            }
+          }} 
+          style={{ fontSize: 12, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-main)' }}
+        >
+          View Raw Logs
+        </button>
       </div>
 
       <div className="ping-monitor-controls">
