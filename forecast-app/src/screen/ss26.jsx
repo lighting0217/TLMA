@@ -17,24 +17,7 @@ const COLS = [
 
 const KEYS = COLS.map(c => c.k);
 const LEAGUE_ORDER = { TL1: 1, TL2: 2, TL3: 3, U21: 4, WOMEN: 5, CHANG: 6, MUANG: 7 };
-const leagueColor = {
-  "THAI LEAGUE 1": "#f31717",
-  "THAI LEAGUE 2": "#574de7",
-  "THAI LEAGUE 3": "#4ac710",
-  "PEA U21": "#dad3f3",
-  "WOMEN": "#ff6bdf",
-  "FA CUP": "#c8ff00",
-  "LEAGUE CUP": "#d60fc6"
-};
-
 const getLeagueOrder = (league) => LEAGUE_ORDER[getLeagueKey(league)] ?? 999;
-
-const getLeagueColor = (league) => {
-  const normalized = normalizeLeague(league);
-  if (normalized.startsWith("THAI LEAGUE 3")) return "#4ac710";
-  if (normalized === "WOMEN") return "#ff6bdf";
-  return leagueColor[normalized] || "#64748B";
-};
 
 function getMonthKey(d) {
   const [, mm, yyyy] = d.split('/');
@@ -86,14 +69,42 @@ function loadStyle(t, hasPO, isFinal) {
 }
 
 const GRID = "100px repeat(7,1fr) 70px";
-const glassCard = { background: "rgba(15,23,42,0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px" };
 
 // ── COMPONENT ──
-export default function Ss26() {
+export default function Ss26({ theme }) {
   const [active, setActive] = useState("ALL");
   const [showInfo, setShowInfo] = useState(true);
   const [selectedLeague, setSelectedLeague] = useState("ALL");
   const [selectedMatchDay, setSelectedMatchDay] = useState(null);
+
+  const leagueColor = {
+    "THAI LEAGUE 1": theme.leagueTL1,
+    "THAI LEAGUE 2": theme.leagueTL2,
+    "THAI LEAGUE 3": theme.leagueTL3,
+    "PEA U21": theme.leagueU21,
+    "WOMEN": theme.leagueWomen,
+    "FA CUP": theme.leagueFACup,
+    "LEAGUE CUP": theme.leagueLeagueCup,
+  };
+
+  const getLeagueColor = (league) => {
+    const normalized = normalizeLeague(league);
+
+    if (normalized.startsWith("THAI LEAGUE 3"))
+      return theme.leagueTL3;
+
+    if (normalized === "WOMEN")
+      return theme.leagueWomen;
+
+    return leagueColor[normalized] || "#64748B";
+  };
+
+  const glassCard = {
+    background: theme.loginBg,
+    backdropFilter: "blur(12px)",
+    border: `1px solid ${theme.glassBorder}`,
+    borderRadius: "12px",
+  };
 
   const months = useMemo(() => {
     const s = new Set(DATA26.map(r => getMonthKey(r.d)));
@@ -165,21 +176,22 @@ export default function Ss26() {
   }, [filteredRows, selectedLeague]);
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: "#E2E8F0" }}>
+    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: theme?.value || "#E2E8F0" }}>
 
       {/* ── HEADER ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "16px" }}>
         <div>
-          <div style={{ fontSize: "0.65rem", color: "#38bdf8", letterSpacing: "0.2em", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
+          <div style={{ fontSize: "0.65rem", color: theme?.accent || "#38bdf8", letterSpacing: "0.2em", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
             AWN/AIS Play · Thai League · IBC
           </div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 900, margin: 0, letterSpacing: "-0.03em", background: "linear-gradient(to right, #f31717,#574de7,#4ac710)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            📅 Thai League Calendar 2025/2026
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 900, margin: 0, letterSpacing: "-0.03em", background: `linear-gradient(to right, ${theme?.leagueTL1 || '#f31717'}, ${theme?.leagueTL2 || '#574de7'}, ${theme?.leagueTL3 || '#4ac710'})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            📅 Thai League Calendar 2026/2027
           </h1>
         </div>
 
+        {/* ปุ่มควบคุม */}
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <button onClick={() => setShowInfo(s => !s)} style={{ ...glassCard, padding: "6px 12px", background: "rgba(30,41,59,0.5)", color: "#94a3b8", cursor: "pointer", fontSize: "0.75rem", fontWeight: 600 }}>
+          <button onClick={() => setShowInfo(s => !s)} style={{ ...glassCard, padding: "6px 12px", background: theme?.btnBg || "rgba(30,41,59,0.5)", border: `1px solid ${theme?.btnBorder || 'transparent'}`, color: theme?.btnTxt || "#94a3b8", cursor: "pointer", fontSize: "0.75rem", fontWeight: 600 }}>
             {showInfo ? "▲ ซ่อนผังข้อมูล" : "▼ แสดงผังข้อมูล"}
           </button>
         </div>
@@ -187,13 +199,13 @@ export default function Ss26() {
 
       {/* ── SEASON STRUCTURAL INFO ── */}
       {showInfo && (
-        <div style={{ ...glassCard, padding: "16px", marginBottom: "20px", fontSize: "0.75rem", background: "rgba(10,15,30,0.8)", borderColor: "rgba(56,189,248,0.1)" }}>
+        <div style={{ ...glassCard, padding: "16px", marginBottom: "20px", fontSize: "0.75rem", background: theme?.barBg || "rgba(10,15,30,0.8)", borderColor: theme?.barBorder || "rgba(56,189,248,0.1)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: "12px", marginBottom: "12px" }}>
-            <div><span style={{ color: "#f31717" }}>■</span> Thai League 1 (2025/26): สถิติจำนวนแมตช์จริงรายวัน</div>
-            <div><span style={{ color: "#574de7" }}>■</span> Thai League 2 (2025/26): สถิติจำนวนแมตช์จริงรายวัน</div>
-            <div><span style={{ color: "#4ac710" }}>■</span> Thai League 3 (2025/26): รวมรอบแบ่งโซนและรอบแชมป์เปี้ยนส์ลีก</div>
+            <div><span style={{ color: theme?.leagueTL1 || "#f31717" }}>■</span> Thai League 1 (2025/26): สถิติจำนวนแมตช์จริงรายวัน</div>
+            <div><span style={{ color: theme?.leagueTL2 || "#574de7" }}>■</span> Thai League 2 (2025/26): สถิติจำนวนแมตช์จริงรายวัน</div>
+            <div><span style={{ color: theme?.leagueTL3 || "#4ac710" }}>■</span> Thai League 3 (2025/26): รวมรอบแบ่งโซนและรอบแชมป์เปี้ยนส์ลีก</div>
           </div>
-          <div style={{ color: "#64748B", fontSize: "0.7rem" }}>
+          <div style={{ color: theme?.emptyText || "#64748B", fontSize: "0.7rem" }}>
             * ระบบแสดงแชนแนลถ่ายทอดสดหลักฐานข้อมูลประวัติฤดูกาล 2025/26
           </div>
         </div>
@@ -202,13 +214,13 @@ export default function Ss26() {
       {/* ── METRICS OVERVIEW ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px", marginBottom: "20px" }}>
         {[
-          { label: "TOTAL ACTUAL LOAD", val: `${grandTotal.toLocaleString()} Matches`, c: "#38bdf8" },
-          { label: "RECORDED PEAK DAY", val: `${peakDayLoad} Feeds`, c: "#ef4444" },
-          { label: "RECORD SEASON PERIOD", val: "2025/2026", c: "#a78bfa" },
-          { label: "FILTER MONTH", val: ML[active], c: "#fb923c" }
+          { label: "TOTAL ACTUAL LOAD", val: `${grandTotal.toLocaleString()} Matches`, c: theme?.accent || "#38bdf8" },
+          { label: "RECORDED PEAK DAY", val: `${peakDayLoad} Feeds`, c: theme?.danger || "#ef4444" },
+          { label: "RECORD SEASON PERIOD", val: "2025/2026", c: theme?.playoff || "#a78bfa" },
+          { label: "FILTER MONTH", val: ML[active], c: theme?.warning || "#fb923c" }
         ].map((k, i) => (
           <div key={i} style={{ ...glassCard, padding: "14px 16px" }}>
-            <div style={{ fontSize: "0.65rem", color: "#64748B", fontWeight: 700, marginBottom: "4px" }}>{k.label}</div>
+            <div style={{ fontSize: "0.65rem", color: theme?.label || "#64748B", fontWeight: 700, marginBottom: "4px" }}>{k.label}</div>
             <div style={{ fontSize: "1.4rem", fontWeight: 900, color: k.c, fontFamily: "monospace" }}>{k.val}</div>
           </div>
         ))}
@@ -247,26 +259,26 @@ export default function Ss26() {
       <div style={{ ...glassCard, overflow: "hidden" }}>
 
         {/* LEAGUE FILTER CHIPS */}
-        <div style={{ display: "flex", gap: "6px", padding: "12px 16px", background: "rgba(2,6,23,0.4)", borderBottom: "1px solid rgba(255,255,255,0.03)", flexWrap: "wrap" }}>
-          <button onClick={() => setSelectedLeague("ALL")} style={{ background: selectedLeague === "ALL" ? "#1e293b" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: selectedLeague === "ALL" ? "#38bdf8" : "#94a3b8", padding: "4px 10px", borderRadius: "6px", fontSize: "0.68rem", fontWeight: 700, cursor: "pointer" }}>
+        <div style={{ display: "flex", gap: "6px", padding: "12px 16px", background: theme?.headerBg || "rgba(2,6,23,0.4)", borderBottom: `1px solid ${theme?.headerBorder || "rgba(255,255,255,0.03)"}`, flexWrap: "wrap" }}>
+          <button onClick={() => setSelectedLeague("ALL")} style={{ background: selectedLeague === "ALL" ? theme?.sidebarActiveBg || "#1e293b" : "transparent", border: `1px solid ${theme?.btnBorder || "rgba(255,255,255,0.08)"}`, color: selectedLeague === "ALL" ? theme?.accent || "#38bdf8" : theme?.btnTxt || "#94a3b8", padding: "4px 10px", borderRadius: "6px", fontSize: "0.68rem", fontWeight: 700, cursor: "pointer" }}>
             แสดงทุกลีก
           </button>
           {COLS.map(c => (
-            <button key={c.k} onClick={() => setSelectedLeague(c.k)} style={{ background: selectedLeague === c.k ? "rgba(255,255,255,0.05)" : "transparent", border: "1px solid rgba(255,255,255,0.05)", color: selectedLeague === c.k ? c.c : "#64748B", padding: "4px 10px", borderRadius: "6px", fontSize: "0.68rem", fontWeight: 600, cursor: "pointer" }}>
+            <button key={c.k} onClick={() => setSelectedLeague(c.k)} style={{ background: selectedLeague === c.k ? theme?.sidebarButtonBg || "rgba(255,255,255,0.05)" : "transparent", border: `1px solid ${theme?.btnBorder || "rgba(255,255,255,0.05)"}`, color: selectedLeague === c.k ? theme[c.colorKey] : theme?.label || "#64748B", padding: "4px 10px", borderRadius: "6px", fontSize: "0.68rem", fontWeight: 600, cursor: "pointer" }}>
               {c.n}
             </button>
           ))}
         </div>
 
         {/* TABLE HEADERS */}
-        <div style={{ display: "grid", gridTemplateColumns: GRID, padding: "10px 18px", background: "#020617", fontSize: "0.65rem", fontWeight: 800, color: "#64748B", letterSpacing: "0.05em" }}>
+        <div style={{ display: "grid", gridTemplateColumns: GRID, padding: "10px 18px", background: theme?.tableHeaderBg || "#020617", borderBottom: `1px solid ${theme?.rowBorder || "rgba(255,255,255,0.05)"}`, fontSize: "0.65rem", fontWeight: 800, color: theme?.label || "#64748B", letterSpacing: "0.05em" }}>
           <div>วันที่การแข่งขัน</div>
           {COLS.map(c => (
-            <div key={c.k} style={{ textAlign: "center", color: selectedLeague === "ALL" || selectedLeague === c.k ? "#94a3b8" : "rgba(148,163,184,0.15)" }}>
+            <div key={c.k} style={{ textAlign: "center", color: selectedLeague === "ALL" || selectedLeague === c.k ? theme?.stadium || "#94a3b8" : "rgba(148,163,184,0.15)" }}>
               {c.k}
             </div>
           ))}
-          <div style={{ textAlign: "center", color: "#38bdf8" }}>TOTAL</div>
+          <div style={{ textAlign: "center", color: theme?.accent || "#38bdf8" }}>TOTAL</div>
         </div>
 
         {/* TABLE BODY ROWS */}
@@ -317,8 +329,10 @@ export default function Ss26() {
           <div>TOTAL LOAD</div>
           {COLS.map(c => {
             const isDimmed = selectedLeague !== "ALL" && selectedLeague !== c.k;
+            // ✅ [Fix Bug] เปลี่ยนจาก theme[c.colorKey] เป็นดึงตาม key league หรือสี default (c.c) เพราะในวัตถุ COLS ไม่มี colorKey
+            const currentLeagueColor = theme[`league${c.k}`] || c.c;
             return (
-              <div key={c.k} style={{ textAlign: "center", color: c.c, fontFamily: "monospace", opacity: isDimmed ? 0.15 : 1, alignSelf: "center" }}>
+              <div key={c.k} style={{ textAlign: "center", color: currentLeagueColor, fontFamily: "monospace", opacity: isDimmed ? 0.15 : 1, alignSelf: "center" }}>
                 {colTotals[c.k] || "0"}
               </div>
             );
@@ -368,7 +382,6 @@ export default function Ss26() {
                 .map((match, idx) => (
                   <div
                     key={idx}
-                    // ✅ แก้ไขปัญหา Scope Bug ของ style.row ให้กลับมาใช้สีพื้นหลังเข้มปกติเมื่อเอาเมาส์ออก
                     onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(59,130,246,0.08)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "#1e293b"; }}
                     style={{ background: "#1e293b", padding: "12px", borderRadius: "8px", transition: "0.2s" }}

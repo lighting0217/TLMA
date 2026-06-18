@@ -1,30 +1,23 @@
-import { useState,  } from "react";
+import { useState } from "react";
 import Ss26 from "./screen/ss26";
 import Ss27 from "./screen/ss27";
 import PingMonitor from "./screen/PingMonitor";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Stdl from "./screen/Stdl";
-
-// 🔌 นำเข้า Telemetry Hook มาดึงค่าสถิติไปโชว์ที่ Sidebar Globally
 import { useFrontendTelemetry } from "./hooks/useFrontendTelemetry";
+import { THEMES } from "./utils/themes";
 
-const theme = {
-  bg: "#020617",
-  sidebarBg: "rgba(15, 23, 42, 0.9)",
-  cardBg: "rgba(30, 41, 59, 0.4)",
-  border: "1px solid rgba(255, 255, 255, 0.05)",
-  textMain: "#E2E8F0",
-  textMuted: "#64748B",
-  accent: "#38bdf8",
-  success: "#10b981",
-  danger: "#ef4444"
-};
+// ── ธีมสำหรับ Stdl ─────────────────────────────────────────────────────────
+const STDL_THEMES = [
+  { key: "dark", label: "🌙", title: "มืด" },
+  { key: "light", label: "☀️", title: "สว่าง" },
+  { key: "teal", label: "🌊", title: "เทอร์ควอยซ์" },
+];
 
 export default function App() {
-  // เช็คว่าเคยล็อกอินผ่านในแท็บนี้หรือยัง
   const [isAuthenticated, setIsAuthenticated] = useState(
-    sessionStorage.getItem("is_authed") === "true"
+    sessionStorage.getItem("is_authed") === "true",
   );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -32,29 +25,23 @@ export default function App() {
 
   const [currentScreen, setCurrentScreen] = useState("ss27");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [themeKey, setThemeKey] = useState("dark");
+  const theme = THEMES[themeKey];
 
-  // 📊 เรียกใช้ข้อมูล Telemetry (ตัว Hook จะดึงสถานะล่าสุดมาอัปเดตให้อัตโนมัติ)
   const { telemetry } = useFrontendTelemetry();
 
-  // ฟังก์ชันตรวจรหัสผ่าน (เวอร์ชันดึงจากไฟล์แยก .env.local ปลอดภัย 100%)
   const handleLogin = (e) => {
     e.preventDefault();
-    
     const envUsersString = import.meta.env.VITE_ALLOWED_USERS;
-    
     if (!envUsersString) {
-      console.error("Error: ไม่พบการตั้งค่า VITE_ALLOWED_USERS ในระบบ");
       setError("ระบบยังไม่พร้อมใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ");
       return;
     }
-
     try {
       const allowedUsers = JSON.parse(envUsersString);
-      
       const userMatched = allowedUsers.find(
-        (account) => account.user === username && account.pass === password
+        (a) => a.user === username && a.pass === password,
       );
-
       if (userMatched) {
         sessionStorage.setItem("is_authed", "true");
         setIsAuthenticated(true);
@@ -62,136 +49,386 @@ export default function App() {
       } else {
         setError("Username หรือ Password ไม่ถูกต้อง");
       }
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      console.error("เกิดข้อผิดพลาดในการอ่านข้อมูลผู้ใช้งาน:", err);
       setError("ระบบตรวจสอบสิทธิ์มีปัญหา กรุณากรอกโครงสร้าง JSON ให้ถูกต้อง");
     }
   };
 
-  // ── 1. กรณีที่ยังไม่ได้ล็อกอิน: บล็อกหน้าจอทั้งหมด ──
+  // ── Login wall ────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
-      <div style={{
-        display: "flex", justifyContent: "center", alignItems: "center",
-        height: "100vh", width: "100vw", backgroundColor: theme.bg, color: theme.textMain, fontFamily: "sans-serif"
-      }}>
-        <form onSubmit={handleLogin} style={{
-          padding: "30px", background: "rgba(15, 23, 42, 0.6)", backdropFilter: "blur(16px)",
-          borderRadius: "12px", border: theme.border, width: "320px", boxSizing: "border-box"
-        }}>
-          <h2 style={{ textAlign: "center", marginBottom: "24px", color: theme.accent, fontSize: "1.25rem", fontWeight: 800 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+          backgroundColor: theme.pageBg,
+          color: theme.title,
+          fontFamily: "sans-serif",
+        }}
+      >
+        <form
+          onSubmit={handleLogin}
+          style={{
+            padding: "30px",
+            background: theme.loginBg,
+            backdropFilter: "blur(16px)",
+            borderRadius: "12px",
+            border: theme.border,
+            width: "320px",
+            boxSizing: "border-box",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "24px",
+              color: theme.accent,
+              fontSize: "1.25rem",
+              fontWeight: 800,
+            }}
+          >
             🔒 จ๊ะเอ๋ ใครเอ่ย
           </h2>
-          
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>ชื่ออะไรจ๊ะะ</label>
-            <input type="text" value={username} onChange={e => setUsername(e.target.value)} 
-              style={{ width: "100%", padding: "10px", borderRadius: "6px", border: theme.border, backgroundColor: "rgba(0,0,0,0.2)", color: theme.textMain, outline: "none", boxSizing: "border-box" }} required />
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: theme.label,
+              }}
+            >
+              ชื่ออะไรจ๊ะะ
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "6px",
+                border: theme.border,
+                backgroundColor: theme.loginInputBg,
+                color: theme.title,
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+              required
+            />
           </div>
-
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: theme.textMuted }}>มีรหัสป่าววว</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} 
-              style={{ width: "100%", padding: "10px", borderRadius: "6px", border: theme.border, backgroundColor: "rgba(0,0,0,0.2)", color: theme.textMain, outline: "none", boxSizing: "border-box" }} required />
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: theme.label,
+              }}
+            >
+              มีรหัสป่าววว
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "6px",
+                border: theme.border,
+                backgroundColor: theme.loginInputBg,
+                color: theme.title,
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+              required
+            />
           </div>
-
-          {error && <p style={{ color: theme.danger, fontSize: "0.8rem", marginBottom: "16px", textAlign: "center" }}>⚠️ {error}</p>}
-
-          <button type="submit" style={{
-            width: "100%", padding: "12px", backgroundColor: theme.accent, 
-            color: "#020617", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: 800, fontSize: "0.9rem", transition: "0.2s"
-          }}>จิ้มเบาๆนะเตงงง</button>
+          {error && (
+            <p
+              style={{
+                color: theme.danger,
+                fontSize: "0.8rem",
+                marginBottom: "16px",
+                textAlign: "center",
+              }}
+            >
+              ⚠️ {error}
+            </p>
+          )}
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: theme.accent,
+              color: theme.loginButtonText,
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontWeight: 800,
+              fontSize: "0.9rem",
+            }}
+          >
+            จิ้มเบาๆนะเตงงง
+          </button>
         </form>
       </div>
     );
   }
 
-  // ── 2. กรณีล็อกอินผ่านแล้ว: ปล่อยเข้าหน้าเว็บ Dashboard ตามเดิม ──
+  // ── Dashboard ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ 
+    <div
+      style={{
         display: "flex",
         height: "100vh",
         width: "100%",
         overflow: "hidden",
-        backgroundColor: theme.bg
-    }}>
-      {/* ── SIDEBAR CONTAINER ── */}
-      <aside style={{ width: isCollapsed ? "70px" : "260px", transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)", backgroundColor: theme.sidebarBg, backdropFilter: "blur(16px)", borderRight: theme.border, display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, zIndex: 100, overflowX: "hidden", padding: "20px 12px", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "space-between", marginBottom: "30px", padding: "0 4px" }}>
-          {!isCollapsed && <div style={{ fontSize: "0.85rem", fontWeight: 800, letterSpacing: "0.05em", color: theme.accent }}>📊 DASHBOARD</div>}
-          <button onClick={() => setIsCollapsed(!isCollapsed)} style={{ background: "rgba(255,255,255,0.03)", border: theme.border, color: theme.textMain, borderRadius: "6px", width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} title={isCollapsed ? "ขยายเมนู" : "ซ่อนเมนู"}>
+        backgroundColor: theme.pageBg,
+      }}
+    >
+      {/* ── SIDEBAR ── */}
+      <aside
+        style={{
+          width: isCollapsed ? "70px" : "220px",
+          transition: "width 0.3s cubic-bezier(0.4,0,0.2,1)",
+          backgroundColor: theme.sidebarBg,
+          backdropFilter: "blur(16px)",
+          borderRight: theme.border,
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          overflowX: "hidden",
+          padding: "20px 12px",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isCollapsed ? "center" : "space-between",
+            marginBottom: "30px",
+            padding: "0 4px",
+          }}
+        >
+          {!isCollapsed && (
+            <div
+              style={{
+                fontSize: "0.85rem",
+                fontWeight: 800,
+                letterSpacing: "0.05em",
+                color: theme.accent,
+              }}
+            >
+              📊 DASHBOARD
+            </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            style={{
+              background: theme.sidebarButtonBg,
+              border: theme.border,
+              color: theme.title,
+              borderRadius: "6px",
+              width: "32px",
+              height: "32px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             {isCollapsed ? "▶" : "◀"}
           </button>
         </div>
 
-        {/* ── TABS NAVIGATION ── */}
-        <nav style={{ display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
-          <button onClick={() => setCurrentScreen("ss27")} style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: "12px", padding: "12px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, width: "100%", transition: "0.2s", backgroundColor: currentScreen === "ss27" ? "rgba(56, 189, 248, 0.1)" : "transparent", color: currentScreen === "ss27" ? theme.accent : theme.textMuted }}>
-            <span style={{ fontSize: "1.1rem" }}>📅</span>
-            {!isCollapsed && <span>Season 2026/27</span>}
-          </button>
-
-          <button onClick={() => setCurrentScreen("ss26")} style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: "12px", padding: "12px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, width: "100%", transition: "0.2s", backgroundColor: currentScreen === "ss26" ? "rgba(56, 189, 248, 0.1)" : "transparent", color: currentScreen === "ss26" ? theme.accent : theme.textMuted }}>
-            <span style={{ fontSize: "1.1rem" }}>⏳</span>
-            {!isCollapsed && <span>Season 2025/26</span>}
-          </button>
-
-          <button onClick={() => setCurrentScreen("ping")} style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: "12px", padding: "12px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, width: "100%", transition: "0.2s", backgroundColor: currentScreen === "ping" ? "rgba(56, 189, 248, 0.1)" : "transparent", color: currentScreen === "ping" ? theme.accent : theme.textMuted }}>
-            <span style={{ fontSize: "1.1rem" }}>⚡</span>
-            {!isCollapsed && <span>Network Ping</span>}
-          </button>
-          <button onClick={() => setCurrentScreen("stdl")} style={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start", gap: "12px", padding: "12px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, width: "100%", transition: "0.2s", backgroundColor: currentScreen === "stdl" ? "rgba(56, 189, 248, 0.1)" : "transparent", color: currentScreen === "stdl" ? theme.accent : theme.textMuted }}>
-            <span style={{ fontSize: "1.1rem" }}>🏟️</span>
-            {!isCollapsed && <span>Stadium IP Lookup</span>}
-          </button>          
+        {/* Nav */}
+        <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {[
+            { id: "ss27", icon: "📅", label: "Season 2026/27" },
+            { id: "ss26", icon: "⏳", label: "Season 2025/26" },
+            { id: "ping", icon: "⚡", label: "Network Ping" },
+            { id: "stdl", icon: "🏟️", label: "Stadium IP Lookup" },
+          ].map(({ id, icon, label }) => (
+            <button
+              key={id}
+              onClick={() => setCurrentScreen(id)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isCollapsed ? "center" : "flex-start",
+                gap: "12px",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                width: "100%",
+                transition: "0.2s",
+                backgroundColor:
+                  currentScreen === id ? theme.sidebarActiveBg : "transparent",
+                color: currentScreen === id ? theme.accent : theme.label,
+              }}
+            >
+              <span style={{ fontSize: "1.1rem" }}>{icon}</span>
+              {!isCollapsed && <span>{label}</span>}
+            </button>
+          ))}
         </nav>
 
-        {/* ── 📊 SIDEBAR FOOTER: เติมชุดวัดปริมาณ Data Telemetry ตรงนี้ ── */}
-        <div style={{ 
-          marginTop: "auto", 
-          borderTop: theme.border, 
-          paddingTop: "12px", 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "4px",
-          textAlign: isCollapsed ? "center" : "left" 
-        }}>
-          {!isCollapsed ? (
-            <>
-              <div style={{ fontSize: "0.75rem", color: theme.textMain, fontWeight: "600", display: "flex", justifyContent: "space-between" }}>
-                <span>📡 Live Traffic:</span>
-                <span style={{ color: theme.accent }}>{telemetry.total.mb} MB</span>
-              </div>
-              <div style={{ fontSize: "0.65rem", color: theme.textMuted, display: "flex", justifyContent: "space-between" }}>
-                <span>Speed/min:</span>
-                <span>{telemetry.perMinute.kb} KB</span>
-              </div>
-              <div style={{ fontSize: "0.65rem", color: theme.textMuted, textAlign: "center", marginTop: "6px", opacity: 0.7 }}>
-                Thai League Live Feed v2.0
-              </div>
-            </>
-          ) : (
-            <div style={{ fontSize: "0.9rem", title: `Total Traffic: ${telemetry.total.mb} MB` }}>
-              📡
+        {/* Bottom Section */}
+        <div
+          style={{
+            marginTop: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          {/* Theme Switcher */}
+          <div
+            style={{
+              paddingTop: "12px",
+              borderTop: theme.border,
+            }}
+          >
+            {isCollapsed ? null : (
+              <p
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: theme.label,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                🎨 Appearance
+              </p>
+            )}
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: isCollapsed ? "column" : "row",
+                gap: 6,
+                alignItems: "center",
+              }}
+            >
+              {STDL_THEMES.map((th) => {
+                const active = th.key === themeKey;
+
+                return (
+                  <button
+                    key={th.key}
+                    onClick={() => setThemeKey(th.key)}
+                    title={th.title}
+                    style={{
+                      flex: isCollapsed ? undefined : 1,
+                      padding: isCollapsed ? "6px" : "6px 4px",
+                      borderRadius: 7,
+                      border: active ? theme.themeActiveBorder : theme.border,
+backgroundColor: active
+  ? theme.themeActiveBg
+  : theme.glassBg,
+
+                      fontWeight: active ? 700 : 500,
+                      color: active ? theme.accent : theme.label,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span>{th.label}</span>
+                    {!isCollapsed && <span>{th.title}</span>}
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
+
+          {/* Footer telemetry */}
+          <div
+            style={{
+              paddingTop: "12px",
+              borderTop: theme.border,
+              background: theme.telemetryBg,
+            }}
+          >
+            {!isCollapsed ? (
+              <>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: theme.title,
+                    fontWeight: 600,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span>📡 Live Traffic:</span>
+                  <span style={{ color: theme.accent }}>
+                    {telemetry.total.mb} MB
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "0.65rem",
+                    color: theme.label,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span>Speed/min:</span>
+                  <span>{telemetry.perMinute.kb} KB</span>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "0.65rem",
+                    color: theme.label,
+                    textAlign: "center",
+                    marginTop: "6px",
+                    opacity: 0.7,
+                  }}
+                >
+                  Thai League Live Feed v2.0
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: "0.9rem" }}>📡</div>
+            )}
+          </div>
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT AREA ── */}
-      <main style={{
-        flex: 1,
-        padding: "4px",
-        width: "100%",
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px"
-      }}>
-        {currentScreen === "ss27" && <Ss27 />}
-        {currentScreen === "ss26" && <Ss26 />}
-        {currentScreen === "ping" && <PingMonitor />}
-        {currentScreen === "stdl"&& <Stdl />}
+      {/* ── MAIN ── */}
+      <main
+        style={{
+          flex: 1,
+          padding: "4px",
+          width: "100%",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+        }}
+      >
+        {currentScreen === "ss27" && <Ss27 theme={theme} />}
+        {currentScreen === "ss26" && <Ss26 theme={theme} />}
+        {currentScreen === "ping" && <PingMonitor theme={theme} />}
+        {currentScreen === "stdl" && <Stdl themeKey={themeKey} />}
       </main>
 
       <Analytics />

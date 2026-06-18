@@ -4,6 +4,7 @@ import { usePingStats } from "../hooks/usePingStats";
 import HistoryLog from "../components/HistoryLog";
 import { useWebSocketPing } from "../hooks/useWebSocketPing";
 import { useFrontendTelemetry } from "../hooks/useFrontendTelemetry";
+import { STATUS_OPTIONS } from "../utils/constants";
 import {
   normalizeNode,
   groupNodesByStadium,
@@ -16,14 +17,7 @@ import {
   requestNotificationPermission,
   sendDowntimeNotification,
 } from "../utils/notifications";
-
-const STATUS_OPTIONS = [
-  { value: "ALL", label: "All" },
-  { value: "ONLINE", label: "Online" },
-  { value: "TIMEOUT", label: "Timeout" },
-];
-
-export default function PingMonitor() {
+export default function PingMonitor({ theme }) {
   const { history, events, updateStats, addEvent } = usePingStats();
   const [groupedNodes, setGroupedNodes] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,7 +27,6 @@ export default function PingMonitor() {
   const prevStatus = useRef({});
   const allNodesRef = useRef({});
   
-  // ลบ trackFetch ออกเพราะไม่ได้ใช้
   const { telemetry } = useFrontendTelemetry();
 
   useEffect(() => {
@@ -99,49 +92,61 @@ export default function PingMonitor() {
   const handleClearSearch = useCallback(() => setSearchTerm(""), []);
 
   return (
-    <div className="ping-monitor-root">
+    <div className="ping-monitor-root" style={{ color: theme?.title }}>
       <div className="ping-monitor-header">
         <div className="ping-monitor-heading">
-          <h2>Network Ping Dashboard</h2>
-          <p>Live overview of device health, outages, and search filters.</p>
+          <h2>📡 Network Monitor</h2>
+          <p style={{ color: theme?.stadium }}>
+            Lastmile network Status Monitor
+          </p>
         </div>
 
         <div className="ping-monitor-badges">
+          {/* 🎯 [FIXED] ย้ายสไตล์กลับเข้ามาอยู่ใน Attribute และแสดงข้อความสถานะให้ถูกต้อง */}
           <span
             className={`status-badge ${
               isConnected ? "status-online" : "status-offline"
             }`}
+            style={{
+              background: isConnected
+                ? (theme?.online || "#22c55e") + "20"
+                : (theme?.offline || "#ef4444") + "20",
+              color: isConnected ? theme?.online : theme?.offline,
+              padding: "4px 8px",
+              borderRadius: "6px",
+              fontWeight: "bold"
+            }}
           >
-            {isConnected ? "Connected" : "Disconnected"}
+            {isConnected ? "● Connected" : "○ Disconnected"}
           </span>
-          <span className="status-info">
+          <span className="status-info" style={{ color: theme?.stadium }}>
             Last update: {lastUpdated || "waiting..."}
           </span>
         </div>
       </div>
 
       <div className="ping-monitor-summary">
-        <div className="ping-monitor-stat-card">
+        <div className="ping-monitor-stat-card" style={{ background: theme?.cardBg, border: `1px solid ${theme?.cardBorder}` }}>
           <strong>{stats.total}</strong>
-          <span>Total devices</span>
+          <span style={{ color: theme?.label }}>อุปกรณ์ทั้งหมด</span>
         </div>
-        <div className="ping-monitor-stat-card">
-          <strong>{stats.online}</strong>
-          <span>Online devices</span>
+        <div className="ping-monitor-stat-card" style={{ background: theme?.cardBg, border: `1px solid ${theme?.cardBorder}` }}>
+          <strong style={{ color: theme?.success }}>{stats.online}</strong>
+          <span style={{ color: theme?.label }}>ออนไลน์</span>
         </div>
-        <div className="ping-monitor-stat-card">
-          <strong>{stats.timeout}</strong>
-          <span>Timeout devices</span>
+        <div className="ping-monitor-stat-card" style={{ background: theme?.cardBg, border: `1px solid ${theme?.cardBorder}` }}>
+          <strong style={{ color: theme?.danger }}>{stats.timeout}</strong>
+          <span style={{ color: theme?.label }}>ขาดการเชื่อมต่อ</span>
         </div>
-        <div className="ping-monitor-stat-card">
+        <div className="ping-monitor-stat-card" style={{ background: theme?.cardBg, border: `1px solid ${theme?.cardBorder}` }}>
           <strong>{stats.groups}</strong>
-          <span>Stadium groups</span>
+          <span style={{ color: theme?.label }}>สนามทั้งหมด</span>        
         </div>
       </div>
 
-      {/* 🎯 [TELEMETRY PANEL] เพิ่ม Optional Chaining (?.) ป้องกันเว็บพังตอนเริ่มต้น */}
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'left', lineHeight: '1.4' }}>
+      {/* 🎯 [TELEMETRY PANEL] ผูกสีเข้ากับ Theme Object เรียบร้อย สลับธีมแล้วสีจะเปลี่ยนตาม */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '16px 0' }}>
+        <div style={{ fontSize: 12, color: theme?.telemetryText || theme?.label, textAlign: 'left', lineHeight: '1.4' }}>
           📡 <strong>Fetches:</strong> {telemetry?.totalFetches || 0} ครั้ง | 
           💾 <strong>Total Data:</strong> {telemetry?.total?.mb || 0} MB | 
           ⚡ <strong>Last File:</strong> {telemetry?.lastFetch?.kb || 0} KB <br/>
@@ -165,7 +170,15 @@ export default function PingMonitor() {
               console.warn('Cannot show telemetry', e); 
             }
           }} 
-          style={{ fontSize: 12, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-main)' }}
+          style={{ 
+            fontSize: 12, 
+            padding: '8px 12px', 
+            borderRadius: 8, 
+            cursor: 'pointer', 
+            background: theme?.btnBg || 'transparent', 
+            border: `1px solid ${theme?.btnBorder || theme?.cardBorder}`, 
+            color: theme?.btnTxt || theme?.value 
+          }}
         >
           View Raw Logs
         </button>
@@ -177,12 +190,18 @@ export default function PingMonitor() {
             value={searchTerm}
             onChange={handleSearchChange}
             placeholder="🔍 ค้นหาสนาม, ชื่ออุปกรณ์ หรือ IP Address..."
+            style={{
+              background: theme?.inputBg,
+              border: `1px solid ${theme?.inputBorder}`,
+              color: theme?.inputColor,
+            }}
           />
           {searchTerm && (
             <button
               type="button"
               className="clear-button"
               onClick={handleClearSearch}
+              style={{ color: theme?.accent }}
             >
               Clear
             </button>
@@ -198,6 +217,11 @@ export default function PingMonitor() {
                 statusFilter === option.value ? "active" : ""
               }`}
               onClick={() => setStatusFilter(option.value)}
+              style={{
+                background: statusFilter === option.value ? theme?.btnActive : theme?.btnBg,
+                borderColor: statusFilter === option.value ? theme?.btnActiveBorder : theme?.btnBorder,
+                color: statusFilter === option.value ? theme?.btnActiveTxt : theme?.btnTxt,
+              }}
             >
               {option.label}
             </button>
@@ -207,7 +231,7 @@ export default function PingMonitor() {
 
       <div className="ping-monitor-cards">
         {Object.entries(filteredGroupedNodes).length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" style={{ color: theme?.emptyText, background: theme?.cardBg, border: `1px solid ${theme?.cardBorder}`, padding: '24px', borderRadius: '8px', textAlign: 'center' }}>
             ไม่มีอุปกรณ์ที่ตรงกับตัวกรองหรือคำค้นหา ปรับฟิลเตอร์หรือค้นหาอีกครั้ง.
           </div>
         ) : (
@@ -217,12 +241,13 @@ export default function PingMonitor() {
               stadiumName={name}
               devices={devs}
               history={history}
+              theme={theme} // ส่งผ่าน theme ไปยังการ์ดย่อย
             />
           ))
         )}
       </div>
 
-      <HistoryLog events={events} />
+      <HistoryLog events={events} theme={theme} />
     </div>
   );
 }
