@@ -123,7 +123,7 @@ export default function Stdl({ themeKey = "dark" }) {
     return allData.filter((r) =>
       [r.club, r.stadium, r.location, r.league, r.region,
        r.encoderA_data1, r.encoderB_data1, r.encoderA_data2nat,
-       r.encoderB_data2nat, r.sw1, r.sw2, r.router]
+       r.encoderB_data2nat, r.sw1, r.sw2, r.router, r.NON1, r.NON2, r.NON3]
         .some((v) => v?.toLowerCase().includes(q))
     );
   }, [query]);
