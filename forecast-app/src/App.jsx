@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Ss26 from "./screen/ss26";
-import Ss27 from "./screen/ss27";
-import PingMonitor from "./screen/PingMonitor";
+import Ss26 from "./screen/ss26Page";
+import Ss27 from "./screen/ss27Page";
+import PingMonitor from "./screen/pingMonitorPage";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import Stdl from "./screen/Stdl";
+import Stdl from "./screen/stdlPage";
 import { useFrontendTelemetry } from "./hooks/useFrontendTelemetry";
 import { THEMES } from "./utils/themes";
 
