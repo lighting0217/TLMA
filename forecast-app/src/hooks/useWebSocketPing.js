@@ -10,8 +10,8 @@ const SOCKET_CONFIG = {
   reconnectionAttempts: 5,
 };
 
-// กำหนดว่าต้อง Timeout กี่ครั้งถึงจะเปลี่ยนเป็นสีแดง (เช่น 3 ครั้ง = 90 วินาที)
-const TIMEOUT_THRESHOLD = 3;
+// กำหนดว่าต้อง Timeout กี่ครั้งถึงจะเปลี่ยนเป็นสีแดง (เช่น 2 ครั้ง = 20 วินาที)
+const TIMEOUT_THRESHOLD = 2;
 
 export const useWebSocketPing = (onDataReceived) => {
   const socketRef = useRef(null);
