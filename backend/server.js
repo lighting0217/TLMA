@@ -102,13 +102,14 @@ app.get('/', (req, res) => {
 
 // 🔥 กลไกพิเศษ: ตัวตรวจจับข้อมูลค้าง (Stale Data Checker)
 setInterval(() => {
-    // ปรับจาก 60000 เป็น 120000 เพื่อลดความถี่ของการเกิด Stale แบบผิดจังหวะ
+    // 1. ขยายเวลาเป็น 120 วินาที เพื่อเผื่อเวลาประมวลผลของ 33 รายการ
     const STALE_TIMEOUT = 120000; 
     const isProduction = process.env.PORT !== undefined && process.env.PORT != "3000";
 
     if (isProduction && globalPingData.length > 0 && (Date.now() - lastAgentSeen > STALE_TIMEOUT)) {
-        console.log(`[Stale Detector] ไม่ได้รับการอัปเดตจาก Agent เกิน ${STALE_TIMEOUT / 1000} วินาที ปรับสถานะเป็น TIMEOUT ทั้งหมด`);
-        
+        // แทนที่จะสั่ง TIMEOUT ทั้งหมดทันที
+        // ให้เช็คแค่ว่าถ้าข้อมูลชุดสุดท้าย "เก่าเกินไป" จริงๆ ค่อยปรับ
+        console.log(`[Stale Detector] ข้อมูลขาดช่วงเกิน 2 นาที ปรับสถานะ...`);     
         // แปลงข้อมูลในแรมทั้งหมดให้เป็นตัวแดง / TIMEOUT
         globalPingData = globalPingData.map(host => ({
             ...host,
