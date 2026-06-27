@@ -101,10 +101,9 @@ app.get('/', (req, res) => {
 });
 
 // 🔥 กลไกพิเศษ: ตัวตรวจจับข้อมูลค้าง (Stale Data Checker)
-// ทำหน้าที่ตรวจสอบทุกๆ 5 วินาที ถ้าเกิดว่าเราอยู่บนระบบออนไลน์ (Production) แล้วไม่มี Agent ส่งข้อมูลเข้ามานานเกิน 60 วินาที
-// ระบบจะตั้งค่าสถานะทุกอย่างเป็น TIMEOUT อัตโนมัติ เพื่อไม่ให้หน้าจอค้างข้อมูลเก่าตอนคุณปิดคอมพิวเตอร์ที่รันสคริปต์ปิง
 setInterval(() => {
-    const STALE_TIMEOUT = 60000; // 🎯 [FIXED] ขยายเวลาขีดจำกัดเป็น 60 วินาที (60000 ms)
+    // ปรับจาก 60000 เป็น 120000 เพื่อลดความถี่ของการเกิด Stale แบบผิดจังหวะ
+    const STALE_TIMEOUT = 120000; 
     const isProduction = process.env.PORT !== undefined && process.env.PORT != "3000";
 
     if (isProduction && globalPingData.length > 0 && (Date.now() - lastAgentSeen > STALE_TIMEOUT)) {
