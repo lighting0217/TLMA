@@ -100,12 +100,11 @@ app.get('/', (req, res) => {
     res.send('TLMA Backend Server is Active 🚀');
 });
 
-// ==========================================
 // 🔥 กลไกพิเศษ: ตัวตรวจจับข้อมูลค้าง (Stale Data Checker)
-// ทำหน้าที่ตรวจสอบทุกๆ 5 วินาที ถ้าเกิดว่าเราอยู่บนระบบออนไลน์ (Production) แล้วไม่มี Agent ส่งข้อมูลเข้ามานานเกิน 30 วินาที
+// ทำหน้าที่ตรวจสอบทุกๆ 5 วินาที ถ้าเกิดว่าเราอยู่บนระบบออนไลน์ (Production) แล้วไม่มี Agent ส่งข้อมูลเข้ามานานเกิน 60 วินาที
 // ระบบจะตั้งค่าสถานะทุกอย่างเป็น TIMEOUT อัตโนมัติ เพื่อไม่ให้หน้าจอค้างข้อมูลเก่าตอนคุณปิดคอมพิวเตอร์ที่รันสคริปต์ปิง
 setInterval(() => {
-    const STALE_TIMEOUT = 30000; // กำหนดขีดจำกัดไว้ที่ 30 วินาที
+    const STALE_TIMEOUT = 60000; // 🎯 [FIXED] ขยายเวลาขีดจำกัดเป็น 60 วินาที (60000 ms)
     const isProduction = process.env.PORT !== undefined && process.env.PORT != "3000";
 
     if (isProduction && globalPingData.length > 0 && (Date.now() - lastAgentSeen > STALE_TIMEOUT)) {
@@ -122,7 +121,6 @@ setInterval(() => {
         io.emit('ping-update', globalPingData);
     }
 }, 5000); // วนลูปเช็กทุกๆ 5 วินาที
-// ==========================================
 
 io.on('connection', (socket) => {
     console.log('มีการเชื่อมต่อเข้ามาใหม่จาก Client:', socket.id);
